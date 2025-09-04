@@ -1,46 +1,55 @@
 // src/routes/users.ts
 import { Router } from "express";
-import { z } from "zod";
-
-import { validate } from "../middlewares/validate";
-import * as ctrl from "../controllers/users";
+import {
+    listUsers,
+    getUserById,
+    createUser,
+    updateUser,
+    deleteUser,
+} from "../controllers/users";
+import { requireAuth } from "../middlewares/auth";
+// Если используете RBAC — можно подключить право на чтение/управление пользователями
+// import { requirePermission } from "../middlewares/permissions";
 
 export const usersRouter = Router();
 
-// Schemes (minimum; you can move them to /schemas/users.ts)
-const ListUsersQuerySchema = z.object({
-    q: z.string().trim().optional(),
-    page: z.coerce.number().int().min(1).default(1).optional(),
-    limit: z.coerce.number().int().min(1).max(200).default(20).optional(),
-});
+// Список пользователей
+usersRouter.get(
+    "/",
+    requireAuth,
+    // requirePermission("user.read"),
+    listUsers
+);
 
-const CreateUserSchema = z.object({
-    email: z.email(),
-    name: z.string().min(1).optional(),
-    role: z.string().min(1).optional(),
-});
+// Получить пользователя по id
+usersRouter.get(
+    "/:id",
+    requireAuth,
+    // requirePermission("user.read"),
+    getUserById
+);
 
-const UpdateUserSchema = CreateUserSchema.partial();
+// Создать пользователя
+usersRouter.post(
+    "/",
+    requireAuth,
+    // requirePermission("user.write"),
+    createUser
+);
 
-const AssignRoleSchema = z.object({
-    userId: z.string().min(1),
-    role: z.string().min(1),
-});
+// Обновить пользователя
+usersRouter.put(
+    "/:id",
+    requireAuth,
+    // requirePermission("user.write"),
+    updateUser
+);
 
-// GET /api/users
-usersRouter.get("/", validate(ListUsersQuerySchema, "query"), ctrl.listUsers);
+// Удалить пользователя
+usersRouter.delete(
+    "/:id",
+    requireAuth,
+    // requirePermission("user.write"),
+    deleteUser
+);
 
-// POST /api/users
-usersRouter.post("/", validate(CreateUserSchema), ctrl.createUser);
-
-// GET /api/users/:id
-usersRouter.get("/:id", ctrl.getUser);
-
-// PUT /api/users/:id
-usersRouter.put("/:id", validate(UpdateUserSchema), ctrl.updateUser);
-
-// DELETE /api/users/:id
-usersRouter.delete("/:id", ctrl.deleteUser);
-
-// POST /api/users/assign-role
-usersRouter.post("/assign-role", validate(AssignRoleSchema), ctrl.assignRole);
