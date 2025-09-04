@@ -16,11 +16,11 @@
     "emailVerified": true
   },
 
-  { "email": "u1@example.com", "password": "Secret123!", "name": "User One", "roles": ["user"], "status": "active", "emailVerified": true },
-  { "email": "u2@example.com", "password": "Secret123!", "name": "User Two", "roles": ["user"], "status": "active", "emailVerified": true },
-  { "email": "u3@example.com", "password": "Secret123!", "name": "User Three", "roles": ["user"], "status": "active", "emailVerified": true },
-  { "email": "u4@example.com", "password": "Secret123!", "name": "User Four", "roles": ["user"], "status": "active", "emailVerified": true },
-  { "email": "u5@example.com", "password": "Secret123!", "name": "User Five", "roles": ["user"], "status": "active", "emailVerified": true },
+  { "email": "user1@example.com", "password": "Secret123!", "name": "Adam One", "roles": ["manager"], "status": "active", "emailVerified": true },
+  { "email": "user2@example.com", "password": "Secret123!", "name": "User Two", "roles": ["user"], "status": "active", "emailVerified": true },
+  { "email": "user3@example.com", "password": "Secret123!", "name": "User Three", "roles": ["user"], "status": "active", "emailVerified": true },
+  { "email": "user4@example.com", "password": "Secret123!", "name": "User Four", "roles": ["user"], "status": "active", "emailVerified": true },
+  { "email": "user5@example.com", "password": "Secret123!", "name": "User Five", "roles": ["user"], "status": "active", "emailVerified": true },
 
   { "email": "blocked@example.com", "password": "Secret123!", "name": "Blocked", "roles": ["user"], "status": "blocked", "emailVerified": true },
   { "email": "pending@example.com", "password": "Secret123!", "name": "Pending", "roles": ["user"], "status": "pending_verification", "emailVerified": false }

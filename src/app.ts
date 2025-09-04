@@ -9,7 +9,8 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { env } from './config/env';
 import { logger } from './utils/logger';
-import { router } from './routes';
+import { authRouter } from "./routes/auth";
+import { apiRouter } from "./routes/api";
 import { errorHandler } from './middlewares/errorHandler';
 
 export const app = express();
@@ -21,7 +22,13 @@ app.use(compression());
 app.use(express.json({ limit: '1mb' }));
 app.use(rateLimit({ windowMs: 60_000, max: 120 })); // 120 req/min/ip
 
-app.use('/api', router);
+app.get("/", (_req, res) => res.send("API Gateway running"));
+
+app.use("/auth", authRouter); // login/refresh/logout/profile
+app.use("/api", apiRouter);   // health, users, events, proxy, ...
+
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.use((_req, res) => res.status(404).json({ error: "Not found" }));
 
 app.use(errorHandler);

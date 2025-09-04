@@ -1,14 +1,31 @@
-// src/utils/proxy.ts
 import type { Request } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import { logger } from './logger';
 
+/**
+ * Type definition for ProxyOpts.
+ *
+ * Represents options for configuring a proxy.
+ *
+ * @property {function} [pathRewrite] - Optional function used to rewrite the request path.
+ *     The function takes the original path and the request object as arguments and
+ *     should return the rewritten path as a string.
+ */
 type ProxyOpts = {
     pathRewrite?: (path: string, req: Request) => string;
 };
 
-export function proxyTo(target: string, opts: ProxyOpts = {}) {
+/**s
+ * Creates proxy middleware based on the provided target URL and options.
+ * The proxy forwards requests to the specified target, optionally rewriting paths
+ * and setting additional proxy request headers.
+ *
+ * @param {string} target - The target URL to which requests will be proxied.
+ * @param {ProxyOpts} [opts={}] - Optional configuration options for the proxy, including path rewriting.
+ * @return {Function} A middleware function for handling proxying of HTTP requests.
+ */
+export function proxyTo(target: string, opts: ProxyOpts = {}): Function {
     return createProxyMiddleware({
         target,
         changeOrigin: true,

@@ -1,16 +1,29 @@
+// src/server.ts
+import 'dotenv/config';
 import { app } from './app';
-import { env } from './config/env';
-import { logger } from './utils/logger';
 
-const server = app.listen(env.PORT, () => logger.info({ port: env.PORT }, 'Gateway started'));
+const PORT = Number(process.env.PORT ?? 3100);
+const HOST = process.env.HOST ?? '0.0.0.0';
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+const server = app.listen(PORT, HOST, () => {
+    console.log('----------------------------------------');
+    console.log(`Gateway listening on  http://localhost:${PORT}`);
+    console.log(`Auth endpoints       -> /auth/*`);
+    console.log(`Business API         -> /api/*`);
+    console.log(`Health check         -> http://localhost:${PORT}/api/health`);
+    console.log(`Login (POST)         -> http://localhost:${PORT}/auth/login`);
+    console.log('----------------------------------------');
+});
 
-function shutdown() {
-  logger.info('Shutting down...');
-  server.close(() => {
-    logger.info('HTTP server closed'); process.exit(0);
-  });
-}
+// graceful termination on errors/signals
+process.on('unhandledRejection', (err: unknown) => {
+    console.error('[unhandledRejection]', err);
+    server.close(() => process.exit(1));
+});
 
+process.on('SIGTERM', () => {
+    console.log('[SIGTERM] shutting down gracefully…');
+    server.close(() => {
+        console.log('HTTP server closed.');
+    });
+});

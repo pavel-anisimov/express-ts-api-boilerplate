@@ -9,11 +9,21 @@ import type { Role } from '../types/models';
 
 import { eventBus } from './eventBus';
 
+/**
+ * Authentication service object providing user management functionalities,
+ * including registration, login, and JWT token issuance.
+ */
 export const authService = {
     /**
-     * Registration.
-     * The first user in the system becomes admin, the rest — user.
-     * By default — active and verified (logic can be changed).
+     * Registers a new user with the provided email, password, and name.
+     * If the user already exists, an error is thrown. The first registered user
+     * is assigned the 'admin' role, while subsequent users are assigned the 'user' role.
+     *
+     * @param {string} email - The email address of the user to register.
+     * @param {string} password - The password for the new user account.
+     * @param {string} name - The name of the user to register.
+     * @return {Promise<Object>} A promise that resolves to an object containing the newly created user and an access token.
+     * @throws {HttpError} If the email is already registered.
      */
     async register(email: string, password: string, name: string) {
         const exist = await userRepo.findByEmail(email);
@@ -44,9 +54,15 @@ export const authService = {
     },
 
     /**
-     * Login with status check.
-     * - blocked → 403
-     * - pending_verification / !emailVerified → 403
+     * Authenticates a user using their email and password.
+     *
+     * @param {string} email The email of the user attempting to log in.
+     * @param {string} password The password of the user attempting to log in.
+     * @return {Promise<{user: Object, accessToken: string}>} A promise that resolves with the authenticated user's information and an access token.
+     * @throws {HttpError} If the email does not match a registered user.
+     * @throws {HttpError} If the user account is blocked.
+     * @throws {HttpError} If the user's email is not verified.
+     * @throws {HttpError} If the password is invalid.
      */
     async login(email: string, password: string) {
         const user = await userRepo.findByEmail(email);
@@ -75,6 +91,15 @@ export const authService = {
         return { user: sanitize(user), accessToken: token };
     },
 
+    /**
+     * Issues a JWT (JSON Web Token) using the provided user details and options.
+     *
+     * @param {string} sub - The unique identifier for the subject (user).
+     * @param {string} email - The email address of the subject.
+     * @param {Role[]} roles - An array of roles assigned to the subject.
+     * @param {string} [name] - The optional name of the subject.
+     * @return {string} A signed JWT containing the provided payload and options.
+     */
     issueToken(sub: string, email: string, roles: Role[], name?: string) {
         // payload as an object - to avoid overloading with callback/none
         const payload = { sub, email, roles, name };
@@ -84,7 +109,13 @@ export const authService = {
     },
 };
 
-function sanitize<T extends { passwordHash?: string }>(user: T) {
+/**
+ * Removes the `passwordHash` property from the given user object, returning a sanitized version of the object.
+ *
+ * @param {T} user - The user objects to be sanitized. This object may contain a `passwordHash` property.
+ * @return {Omit<T, 'passwordHash'>} A new user object without the `passwordHash` property.
+ */
+function sanitize<T extends { passwordHash?: string }>(user: T): Omit<T, 'passwordHash'> {
     // remove passwordHash from the response
     const {  passwordHash: _passwordHash, ...rest } = user;
 

@@ -44,6 +44,8 @@
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "resolveJsonModule": true,
+
+    "noEmit": true,
   },
 
   "include": ["src", "tests", "vitest.setup.ts"]
