@@ -2,17 +2,20 @@ import type { Request, Response, NextFunction } from 'express';
 
 import { permissionsForRoles, type Permission } from '../config/rbac';
 
+type AuthedRequest = Request & {
+  user?: { roles?: string[] };
+  auth?: { roles?: string[] };
+};
+
 export function requirePermission(...needed: Permission[]) {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const anyReq = req as any;
-        const roles: string[] =
-            anyReq.user?.roles ?? anyReq.auth?.roles ?? [];
+    return (request: Request, response: Response, next: NextFunction) => {
+        const anyRequest = request as AuthedRequest;
+        const roles: string[] = anyRequest.user?.roles ?? anyRequest.auth?.roles ?? [];
 
         const granted = permissionsForRoles(roles);
-        const ok = needed.every((p) => granted.has(p as Permission));
-
+        const ok = needed.every((permission) => granted.has(permission));
         if (!ok) {
-            return res
+            return response
                 .status(403)
                 .json({ error: { code: "FORBIDDEN", message: "Insufficient permission" } });
         }

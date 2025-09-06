@@ -1,0 +1,1298 @@
+[
+  {
+    "id": "u1",
+    "email": "alice@example.com",
+    "username": "alice",
+    "display_name": "AliceD",
+    "first_name": "Alice",
+    "last_name": "Doe",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 1,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1991-02-11",
+      "location": {
+        "city": "Boston",
+        "state": "MA",
+        "country": "USA",
+        "zip": "02110"
+      },
+      "language": "en",
+      "timezone": "America/New_York",
+      "avatar_url": "https://example.com/avatars/alice.png",
+      "bio": "Bio for Alice.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/alice"
+      },
+      "phone_number": "+1-202-555-0101",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.1.10",
+      "last_login_ip": "192.168.1.11",
+      "login_count": 5,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u2",
+    "email": "bob@example.com",
+    "username": "bob",
+    "display_name": "Bobby",
+    "first_name": "Bob",
+    "last_name": "Miller",
+    "status": "pending",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t3",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 2,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "male",
+      "date_of_birth": "1992-03-12",
+      "location": {
+        "city": "New York",
+        "state": "NY",
+        "country": "USA",
+        "zip": "10122"
+      },
+      "language": "en",
+      "timezone": "America/New_York",
+      "avatar_url": "https://example.com/avatars/bob.png",
+      "bio": "Bio for Bob.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/bob"
+      },
+      "phone_number": "+1-202-555-0102",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.2.10",
+      "last_login_ip": "192.168.2.11",
+      "login_count": 10,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u3",
+    "email": "carol@example.com",
+    "username": "carol",
+    "display_name": "Caro",
+    "first_name": "Carol",
+    "last_name": "Nguyen",
+    "status": "suspended",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t1",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 0,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1993-04-13",
+      "location": {
+        "city": "San Francisco",
+        "state": "CA",
+        "country": "USA",
+        "zip": "94105"
+      },
+      "language": "en",
+      "timezone": "America/Los_Angeles",
+      "avatar_url": "https://example.com/avatars/carol.png",
+      "bio": "Bio for Carol.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/carol"
+      },
+      "phone_number": "+1-202-555-0103",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": true
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.3.10",
+      "last_login_ip": "192.168.3.11",
+      "login_count": 15,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u4",
+    "email": "david@example.com",
+    "username": "david",
+    "display_name": "Dave",
+    "first_name": "David",
+    "last_name": "Lopez",
+    "status": "deleted",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 1,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "male",
+      "date_of_birth": "1994-05-14",
+      "location": {
+        "city": "Chicago",
+        "state": "IL",
+        "country": "USA",
+        "zip": "60601"
+      },
+      "language": "en",
+      "timezone": "America/Chicago",
+      "avatar_url": "https://example.com/avatars/david.png",
+      "bio": "Bio for David.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/david"
+      },
+      "phone_number": "+1-202-555-0104",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.4.10",
+      "last_login_ip": "192.168.4.11",
+      "login_count": 20,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u5",
+    "email": "eva@example.com",
+    "username": "eva",
+    "display_name": "Evie",
+    "first_name": "Eva",
+    "last_name": "Schmidt",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "admin"
+    ],
+    "tenant_id": "t3",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 2,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1995-06-15",
+      "location": {
+        "city": "Berlin",
+        "state": "BE",
+        "country": "Germany",
+        "zip": "10115"
+      },
+      "language": "de",
+      "timezone": "Europe/Berlin",
+      "avatar_url": "https://example.com/avatars/eva.png",
+      "bio": "Bio for Eva.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/eva"
+      },
+      "phone_number": "+1-202-555-0105",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.5.10",
+      "last_login_ip": "192.168.5.11",
+      "login_count": 25,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u6",
+    "email": "frank@example.com",
+    "username": "frank",
+    "display_name": "Franky",
+    "first_name": "Frank",
+    "last_name": "Wong",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t1",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 0,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "male",
+      "date_of_birth": "1996-07-16",
+      "location": {
+        "city": "Hong Kong",
+        "state": "HK",
+        "country": "China",
+        "zip": "00000"
+      },
+      "language": "zh",
+      "timezone": "Asia/Hong_Kong",
+      "avatar_url": "https://example.com/avatars/frank.png",
+      "bio": "Bio for Frank.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/frank"
+      },
+      "phone_number": "+1-202-555-0106",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": true
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.6.10",
+      "last_login_ip": "192.168.6.11",
+      "login_count": 30,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u7",
+    "email": "george@example.com",
+    "username": "george",
+    "display_name": "Geo",
+    "first_name": "George",
+    "last_name": "Brown",
+    "status": "pending",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 1,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "male",
+      "date_of_birth": "1997-08-17",
+      "location": {
+        "city": "London",
+        "state": "LDN",
+        "country": "UK",
+        "zip": "SW1A1AA"
+      },
+      "language": "en",
+      "timezone": "Europe/London",
+      "avatar_url": "https://example.com/avatars/george.png",
+      "bio": "Bio for George.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/george"
+      },
+      "phone_number": "+1-202-555-0107",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.7.10",
+      "last_login_ip": "192.168.7.11",
+      "login_count": 35,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u8",
+    "email": "hana@example.com",
+    "username": "hana",
+    "display_name": "Hana",
+    "first_name": "Hana",
+    "last_name": "Yamamoto",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t3",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 2,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1998-09-18",
+      "location": {
+        "city": "Tokyo",
+        "state": "TKY",
+        "country": "Japan",
+        "zip": "1000001"
+      },
+      "language": "ja",
+      "timezone": "Asia/Tokyo",
+      "avatar_url": "https://example.com/avatars/hana.png",
+      "bio": "Bio for Hana.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/hana"
+      },
+      "phone_number": "+1-202-555-0108",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.8.10",
+      "last_login_ip": "192.168.8.11",
+      "login_count": 40,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u9",
+    "email": "ivan@example.com",
+    "username": "ivan",
+    "display_name": "Vanya",
+    "first_name": "Ivan",
+    "last_name": "Petrov",
+    "status": "suspended",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t1",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 0,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "male",
+      "date_of_birth": "1999-01-10",
+      "location": {
+        "city": "Moscow",
+        "state": "MOW",
+        "country": "Russia",
+        "zip": "101000"
+      },
+      "language": "ru",
+      "timezone": "Europe/Moscow",
+      "avatar_url": "https://example.com/avatars/ivan.png",
+      "bio": "Bio for Ivan.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/ivan"
+      },
+      "phone_number": "+1-202-555-0109",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": true
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.9.10",
+      "last_login_ip": "192.168.9.11",
+      "login_count": 45,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u10",
+    "email": "julia@example.com",
+    "username": "julia",
+    "display_name": "Jules",
+    "first_name": "Julia",
+    "last_name": "Martinez",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "admin"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 1,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1990-02-11",
+      "location": {
+        "city": "Madrid",
+        "state": "MD",
+        "country": "Spain",
+        "zip": "28001"
+      },
+      "language": "es",
+      "timezone": "Europe/Madrid",
+      "avatar_url": "https://example.com/avatars/julia.png",
+      "bio": "Bio for Julia.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/julia"
+      },
+      "phone_number": "+1-202-555-0110",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.10.10",
+      "last_login_ip": "192.168.10.11",
+      "login_count": 50,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u11",
+    "email": "kevin@example.com",
+    "username": "kevin",
+    "display_name": "Kev",
+    "first_name": "Kevin",
+    "last_name": "O'Neil",
+    "status": "pending",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t3",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 2,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "male",
+      "date_of_birth": "1991-03-12",
+      "location": {
+        "city": "Dublin",
+        "state": "DB",
+        "country": "Ireland",
+        "zip": "D01"
+      },
+      "language": "en",
+      "timezone": "Europe/Dublin",
+      "avatar_url": "https://example.com/avatars/kevin.png",
+      "bio": "Bio for Kevin.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/kevin"
+      },
+      "phone_number": "+1-202-555-0111",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.11.10",
+      "last_login_ip": "192.168.11.11",
+      "login_count": 55,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u12",
+    "email": "li@example.com",
+    "username": "li",
+    "display_name": "LiLi",
+    "first_name": "Li",
+    "last_name": "Wei",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t1",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 0,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1992-04-13",
+      "location": {
+        "city": "Beijing",
+        "state": "BJ",
+        "country": "China",
+        "zip": "100000"
+      },
+      "language": "zh",
+      "timezone": "Asia/Shanghai",
+      "avatar_url": "https://example.com/avatars/li.png",
+      "bio": "Bio for Li.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/li"
+      },
+      "phone_number": "+1-202-555-0112",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": true
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.12.10",
+      "last_login_ip": "192.168.12.11",
+      "login_count": 60,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u13",
+    "email": "maria@example.com",
+    "username": "maria",
+    "display_name": "Masha",
+    "first_name": "Maria",
+    "last_name": "Ivanova",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 1,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1993-05-14",
+      "location": {
+        "city": "Kyiv",
+        "state": "KV",
+        "country": "Ukraine",
+        "zip": "01001"
+      },
+      "language": "uk",
+      "timezone": "Europe/Kiev",
+      "avatar_url": "https://example.com/avatars/maria.png",
+      "bio": "Bio for Maria.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/maria"
+      },
+      "phone_number": "+1-202-555-0113",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.13.10",
+      "last_login_ip": "192.168.13.11",
+      "login_count": 65,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u14",
+    "email": "nick@example.com",
+    "username": "nick",
+    "display_name": "Nico",
+    "first_name": "Nick",
+    "last_name": "Anderson",
+    "status": "deleted",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t3",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 2,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "male",
+      "date_of_birth": "1994-06-15",
+      "location": {
+        "city": "Toronto",
+        "state": "ON",
+        "country": "Canada",
+        "zip": "M5H"
+      },
+      "language": "en",
+      "timezone": "America/Toronto",
+      "avatar_url": "https://example.com/avatars/nick.png",
+      "bio": "Bio for Nick.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/nick"
+      },
+      "phone_number": "+1-202-555-0114",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.14.10",
+      "last_login_ip": "192.168.14.11",
+      "login_count": 70,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u15",
+    "email": "olga@example.com",
+    "username": "olga",
+    "display_name": "Olya",
+    "first_name": "Olga",
+    "last_name": "Sokolova",
+    "status": "pending",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "admin"
+    ],
+    "tenant_id": "t1",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 0,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1995-07-16",
+      "location": {
+        "city": "Warsaw",
+        "state": "MZ",
+        "country": "Poland",
+        "zip": "00-001"
+      },
+      "language": "pl",
+      "timezone": "Europe/Warsaw",
+      "avatar_url": "https://example.com/avatars/olga.png",
+      "bio": "Bio for Olga.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/olga"
+      },
+      "phone_number": "+1-202-555-0115",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": true
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.15.10",
+      "last_login_ip": "192.168.15.11",
+      "login_count": 75,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u16",
+    "email": "peter@example.com",
+    "username": "peter",
+    "display_name": "Pete",
+    "first_name": "Peter",
+    "last_name": "Johnson",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 1,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "male",
+      "date_of_birth": "1996-08-17",
+      "location": {
+        "city": "Sydney",
+        "state": "NSW",
+        "country": "Australia",
+        "zip": "2000"
+      },
+      "language": "en",
+      "timezone": "Australia/Sydney",
+      "avatar_url": "https://example.com/avatars/peter.png",
+      "bio": "Bio for Peter.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/peter"
+      },
+      "phone_number": "+1-202-555-0116",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.16.10",
+      "last_login_ip": "192.168.16.11",
+      "login_count": 80,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u17",
+    "email": "quinn@example.com",
+    "username": "quinn",
+    "display_name": "Q",
+    "first_name": "Quinn",
+    "last_name": "Taylor",
+    "status": "active",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": true,
+    "email_verified_at": "2025-09-01T12:05:00Z",
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t3",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": false,
+      "failed_login_count": 2,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "non-binary",
+      "date_of_birth": "1997-09-18",
+      "location": {
+        "city": "Auckland",
+        "state": "AKL",
+        "country": "New Zealand",
+        "zip": "1010"
+      },
+      "language": "en",
+      "timezone": "Pacific/Auckland",
+      "avatar_url": "https://example.com/avatars/quinn.png",
+      "bio": "Bio for Quinn.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/quinn"
+      },
+      "phone_number": "+1-202-555-0117",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.17.10",
+      "last_login_ip": "192.168.17.11",
+      "login_count": 85,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  },
+  {
+    "id": "u18",
+    "email": "rita@example.com",
+    "username": "rita",
+    "display_name": "Riri",
+    "first_name": "Rita",
+    "last_name": "Costa",
+    "status": "suspended",
+    "status_changed_at": "2025-09-01T12:00:00Z",
+    "status_changed_by": "system",
+    "email_verified": false,
+    "email_verified_at": null,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t1",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "security": {
+      "two_factor_enabled": true,
+      "failed_login_count": 0,
+      "last_failed_login_at": null,
+      "password_updated_at": "2025-09-01T10:00:00Z",
+      "locked_until": null
+    },
+    "profile": {
+      "gender": "female",
+      "date_of_birth": "1998-01-10",
+      "location": {
+        "city": "Lisbon",
+        "state": "LX",
+        "country": "Portugal",
+        "zip": "1000-001"
+      },
+      "language": "pt",
+      "timezone": "Europe/Lisbon",
+      "avatar_url": "https://example.com/avatars/rita.png",
+      "bio": "Bio for Rita.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/rita"
+      },
+      "phone_number": "+1-202-555-0118",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": true
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "metadata": {
+      "signup_ip": "192.168.18.10",
+      "last_login_ip": "192.168.18.11",
+      "login_count": 90,
+      "user_agent": "Mozilla/5.0"
+    },
+    "external_ids": {
+      "google": null,
+      "github": null
+    },
+    "auth_provider": "password",
+    "terms_version": "v1.2",
+    "terms_accepted_at": "2025-09-01T10:00:05Z",
+    "privacy_accepted_at": "2025-09-01T10:00:05Z",
+    "feature_gates": []
+  }
+]

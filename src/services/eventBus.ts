@@ -32,7 +32,11 @@ export const eventBus = {
     publish(type: string, payload?: unknown): BusEvent {
         const ev: BusEvent = { type, payload, ts: new Date().toISOString() };
 
-        lastEvents.push(ev); if (lastEvents.length > 50) lastEvents.shift();
+        lastEvents.push(ev);
+
+        if (lastEvents.length > 50) {
+            lastEvents.shift();
+        }
         setTimeout(() => emitter.emit(type, ev), 0); // async kafka simulation
 
         return ev;

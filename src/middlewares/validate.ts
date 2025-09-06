@@ -1,15 +1,13 @@
 // type-only imports from express
-import type {Request, Response, NextFunction, RequestHandler} from 'express';
-import type { ZodType } from 'zod';
-import type { z } from "zod";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
+import type { ZodType } from "zod";
 
-type AnyZod = ZodType<unknown>; // equivalent to "any zod schema"
-
-
-export function validate(schema: AnyZod, where: "body" | "query" | "params" = "body"): RequestHandler {
+export function validate<T>(
+    schema: ZodType<T>,
+    where: "body" | "query" | "params" = "body"
+): RequestHandler {
     return (req: Request, res: Response, next: NextFunction) => {
-        const src =
-            where === "body" ? req.body : where === "params" ? req.params : req.query;
+        const src = where === "body" ? req.body : where === "params" ? req.params : req.query;
 
         const parsed = schema.safeParse(src);
         if (!parsed.success) {
@@ -18,12 +16,20 @@ export function validate(schema: AnyZod, where: "body" | "query" | "params" = "b
             });
         }
 
-        // НИКОГДА не делаем: req[where] = parsed.data
-        // В Express 5 req.query — только getter.
-        if (where === "query" || where === "params") {
-            Object.assign(src as any, parsed.data);
+        // NEVER do: req[where] = parsed.data
+        // In Express 5, req.query is just a getter.
+        if (where === "query") {
+            Object.assign(
+                req.query as unknown as Record<string, unknown>,
+                parsed.data as unknown as Record<string, unknown>
+            );
+        } else if (where === "params") {
+            Object.assign(
+                req.params as unknown as Record<string, string>,
+                parsed.data as unknown as Record<string, string>
+            );
         } else {
-            req.body = parsed.data as any;
+            (req as Request & { body: T }).body = parsed.data;
         }
         next();
     };

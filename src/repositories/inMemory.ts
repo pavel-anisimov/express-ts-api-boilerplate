@@ -20,7 +20,9 @@ const users: User[] = [];
 function seedFromMock() {
     try {
         const p = path.join(process.cwd(), 'mock-data', 'users.json');
-        if (!fs.existsSync(p)) return;
+        if (!fs.existsSync(p)) {
+            return;
+        }
 
         const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Array<{
             email: string;

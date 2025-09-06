@@ -17,7 +17,7 @@ export const authService = {
     /**
      * Registers a new user with the provided email, password, and name.
      * If the user already exists, an error is thrown. The first registered user
-     * is assigned the 'admin' role, while subsequent users are assigned the 'user' role.
+     * is assigned the 'admin' role, while later users are assigned the 'user' role.
      *
      * @param {string} email - The email address of the user to register.
      * @param {string} password - The password for the new user account.
@@ -100,7 +100,7 @@ export const authService = {
      * @param {string} [name] - The optional name of the subject.
      * @return {string} A signed JWT containing the provided payload and options.
      */
-    issueToken(sub: string, email: string, roles: Role[], name?: string) {
+    issueToken(sub: string, email: string, roles: Role[], name?: string): string {
         // payload as an object - to avoid overloading with callback/none
         const payload = { sub, email, roles, name };
         const options: SignOptions = { expiresIn: env.JWT_EXPIRES_IN, jwtid: uuid() };

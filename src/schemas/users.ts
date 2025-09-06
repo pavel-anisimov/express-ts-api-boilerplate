@@ -10,7 +10,7 @@ export const ListUsersQuerySchema = z.object({
 export const CreateUserSchema = z.object({
     email: z.email(),
     name: z.string().min(1).optional(),
-    role: z.string().min(1).optional(), // "admin" | "user" и т.п.
+    role: z.string().min(1).optional(), // "admin" | "user" etc.
 });
 
 export const UpdateUserSchema = CreateUserSchema.partial();

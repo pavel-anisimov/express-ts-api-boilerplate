@@ -1,5 +1,6 @@
 // src/routes/users.ts
 import { Router } from "express";
+
 import {
     listUsers,
     getUserById,
@@ -8,12 +9,12 @@ import {
     deleteUser,
 } from "../controllers/users";
 import { requireAuth } from "../middlewares/auth";
-// Если используете RBAC — можно подключить право на чтение/управление пользователями
+// If you use RBAC, you can enable read/manage user rights
 // import { requirePermission } from "../middlewares/permissions";
 
 export const usersRouter = Router();
 
-// Список пользователей
+// List of users
 usersRouter.get(
     "/",
     requireAuth,
@@ -21,7 +22,7 @@ usersRouter.get(
     listUsers
 );
 
-// Получить пользователя по id
+// Get user by id
 usersRouter.get(
     "/:id",
     requireAuth,
@@ -29,7 +30,7 @@ usersRouter.get(
     getUserById
 );
 
-// Создать пользователя
+// Create user
 usersRouter.post(
     "/",
     requireAuth,
@@ -37,7 +38,7 @@ usersRouter.post(
     createUser
 );
 
-// Обновить пользователя
+// Update user
 usersRouter.put(
     "/:id",
     requireAuth,
@@ -45,7 +46,7 @@ usersRouter.put(
     updateUser
 );
 
-// Удалить пользователя
+// Delete user
 usersRouter.delete(
     "/:id",
     requireAuth,

@@ -20,6 +20,9 @@ export const env = {
     NODE_ENV: process.env.NODE_ENV ?? 'development',
     PORT: Number(process.env.PORT ?? 3100),
     CORS_ORIGINS: arr(process.env.CORS_ORIGINS),
-    JWT_SECRET: process.env.JWT_SECRET ?? 'change_me',
+    JWT_SECRET: process.env.JWT_SECRET ?? 'dev_super_secret_change_me',
     JWT_EXPIRES_IN: (process.env.JWT_EXPIRES_IN ?? '1h') as MsLike | number,
-};
+
+    ACCESS_TTL: (process.env.ACCESS_TTL ?? '1h') as MsLike | number,
+    REFRESH_TTL: (process.env.REFRESH_TTL ?? '7d') as MsLike | number,
+ };

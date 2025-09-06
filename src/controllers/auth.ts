@@ -1,16 +1,31 @@
 // src/controllers/auth.ts
 import type { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { findByEmail /*, getById */ } from "../repositories/usersRepo";
+import jwt, { type SignOptions, type JwtPayload, TokenExpiredError } from "jsonwebtoken";
+import { v4 as uuid } from "uuid";
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev_super_secret_change_me";
-const ACCESS_TTL = process.env.JWT_ACCESS_TTL || "1h";
-const REFRESH_TTL = process.env.JWT_REFRESH_TTL || "7d";
+import { findByEmail /*, getById */ } from "../repositories/usersRepo";
+import { env } from "../config/env";
+
+type Role = string;
+interface JwtClaims extends JwtPayload {
+    sub: string;                 // user id
+    email?: string;
+    name?: string;
+    roles?: Role[];
+    type?: "access" | "refresh";
+}
+// What do auth middlewares put in request
+type RequestWithAuth = Request & {
+    user?: JwtClaims;
+    auth?: JwtClaims;
+};
 
 export async function login(request: Request, response: Response, next: NextFunction) {
     try {
         const { email, password } = request.body ?? {};
-        if (!email || !password) return response.status(400).json({ error: "email and password are required" });
+        if (!email || !password) {
+            return response.status(400).json({ error: "email and password are required" });
+        }
 
         const user = await findByEmail(String(email));
 
@@ -26,10 +41,15 @@ export async function login(request: Request, response: Response, next: NextFunc
             return response.status(403).json({ error: "email not verified" });
         }
 
-        const payload = { sub: user.id, email: user.email, name: user.name, roles: user.roles };
+        const accessPayload = { sub: user.id, email: user.email, name: user.name, roles: user.roles };
+        const refreshPayload = { sub: user.id, type: "refresh" };
 
-        const accessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: ACCESS_TTL });
-        const refreshToken = jwt.sign({ sub: user.id, type: "refresh" }, JWT_SECRET, { expiresIn: REFRESH_TTL });
+        const accessOptions: SignOptions = { expiresIn: env.ACCESS_TTL, jwtid: uuid() };
+        const refreshOptions: SignOptions = { expiresIn: env.REFRESH_TTL, jwtid: uuid() };
+
+        const accessToken = jwt.sign(accessPayload, env.JWT_SECRET, accessOptions);
+        const refreshToken = jwt.sign(refreshPayload, env.JWT_SECRET, refreshOptions);
+
         const { password: _hidden, ...safe } = user;
 
         return response.json({ accessToken, refreshToken, user: safe });
@@ -45,15 +65,19 @@ export async function refresh(request: Request, response: Response, next: NextFu
             return response.status(400).json({ error: "missing refreshToken" });
         }
 
-        const decoded = jwt.verify(String(refreshToken), JWT_SECRET) as any;
+        const decoded = jwt.verify(String(refreshToken), env.JWT_SECRET) as JwtClaims;
+
         if (decoded?.type !== "refresh") {
             return response.status(401).json({ error: "invalid refresh token" });
         }
 
-        const newAccessToken = jwt.sign({ sub: decoded.sub }, JWT_SECRET, { expiresIn: ACCESS_TTL });
+        const payload = { sub: decoded.sub };
+        const accessOptions: SignOptions = { expiresIn: env.ACCESS_TTL, jwtid: uuid() };
+        const newAccessToken = jwt.sign(payload, env.JWT_SECRET, accessOptions);
+
         return response.json({ accessToken: newAccessToken });
-    } catch (error: any) {
-        if (error?.name === "TokenExpiredError") {
+    } catch (error) {
+        if (error instanceof TokenExpiredError) {
             return response.status(401).json({ error: "refresh token expired" });
         }
         return next(error);
@@ -64,15 +88,15 @@ export async function logout(_request: Request, response: Response) {
     return response.status(204).end();
 }
 
-/** GET /auth/me — вернуть текущего пользователя из req.user/req.auth */
+/** GET /auth/me - return the current user from req.user/req.auth */
 export async function me(request: Request, response: Response) {
-    const anyReq = request as any;
-    const fromReq = anyReq.user ?? anyReq.auth;
+    const authReq = request as RequestWithAuth;
+    const fromReq = authReq.user ?? authReq.auth;
     if (!fromReq) {
         return response.status(401).json({ error: "unauthorized" });
     }
 
-    // Приводим к безопасной форме
+    // Bringing it to a safe form
     return response.json({
         id: fromReq.id ?? fromReq.sub,
         email: fromReq.email ?? null,

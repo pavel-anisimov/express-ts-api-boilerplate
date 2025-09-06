@@ -1,4 +1,4 @@
-import type { Request } from 'express';
+import type { Request, RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import { logger } from './logger';
@@ -16,16 +16,16 @@ type ProxyOpts = {
     pathRewrite?: (path: string, req: Request) => string;
 };
 
-/**s
- * Creates proxy middleware based on the provided target URL and options.
- * The proxy forwards requests to the specified target, optionally rewriting paths
- * and setting additional proxy request headers.
+/**
+ * Sets up a proxy middleware handler that forwards requests to a specified target.
+ * The proxy middleware supports custom logging, authorization header forwarding,
+ * and optional path rewriting.
  *
- * @param {string} target - The target URL to which requests will be proxied.
- * @param {ProxyOpts} [opts={}] - Optional configuration options for the proxy, including path rewriting.
- * @return {Function} A middleware function for handling proxying of HTTP requests.
+ * @param {string} target - The target URL to which the requests will be proxied.
+ * @param {ProxyOpts} [opts={}] - Optional configuration for the proxy middleware, including path rewrite options.
+ * @return {RequestHandler} A middleware function configured for request proxying.
  */
-export function proxyTo(target: string, opts: ProxyOpts = {}): Function {
+export function proxyTo(target: string, opts: ProxyOpts = {}): RequestHandler {
     return createProxyMiddleware({
         target,
         changeOrigin: true,
