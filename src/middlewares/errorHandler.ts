@@ -2,7 +2,6 @@ import type {Request, Response, NextFunction} from 'express';
 
 import type { HttpError } from '../utils/httpError';
 
-
 /**
  * Handles application errors by formatting and sending a response with the appropriate status and message.
  *
