@@ -25,7 +25,7 @@ export async function publishTest(request: Request, response: Response): Promise
  *
  * @param {Request} _req - The incoming HTTP request object, not used in this method.
  * @param {Response} res - The outgoing HTTP response object.
- * @return {Promise<void>} A promise that resolves when the response is sent with the recent events data.
+ * @return {Promise<void>} A promise that resolves when the response is sent with the recent events' data.
  */
 export async function recent(_req: Request, res: Response): Promise<void> {
     res.json({ data: eventBus.recent() });

@@ -8,10 +8,10 @@ const HOST = process.env.HOST ?? '0.0.0.0';
 const server = app.listen(PORT, HOST, () => {
     console.log('----------------------------------------');
     console.log(`Gateway listening on  http://localhost:${PORT}`);
-    console.log(`Auth endpoints       -> /auth/*`);
+    console.log(`Auth endpoints       -> /api/auth/*`);
     console.log(`Business API         -> /api/*`);
     console.log(`Health check         -> http://localhost:${PORT}/api/health`);
-    console.log(`Login (POST)         -> http://localhost:${PORT}/auth/login`);
+    console.log(`Login (POST)         -> http://localhost:${PORT}/api/auth/login`);
     console.log('----------------------------------------');
 });
 

@@ -1,7 +1,52 @@
 // src/controllers/users.ts
 import type { Request, Response, NextFunction } from "express";
 
-import { getAllUsers, type UserSafe /*, getById*/ } from "../repositories/usersRepo";
+import { getAllUsers, getProfileByEmail, getProfileById, updateUserDeleted, updateUserSuspended, type UserSafe } from "../repositories/usersRepo";
+
+type RequestWithAuth = Request & {
+    auth?: {
+        sub: string;
+        email?: string;
+        roles?: string[];
+    };
+    user?: {
+        id: string;
+        email?: string;
+        roles: string[];
+    };
+};
+
+function getRequester(request: Request): RequestWithAuth["user"] | RequestWithAuth["auth"] | null {
+    const authReq = request as RequestWithAuth;
+    return authReq.user ?? authReq.auth ?? null;
+}
+
+function getRequesterId(requester: NonNullable<ReturnType<typeof getRequester>>): string {
+    return "id" in requester ? requester.id : requester.sub;
+}
+
+async function canRequesterDelete(requester: NonNullable<ReturnType<typeof getRequester>>, targetId: string): Promise<boolean> {
+    const requesterId = getRequesterId(requester);
+    const requesterProfile =
+        (await getProfileById(requesterId)) ??
+        (requester.email ? await getProfileByEmail(requester.email) : null);
+
+    return (requester.roles ?? []).includes("admin") || requesterProfile?.id === targetId || requesterId === targetId;
+}
+
+function canRequesterSuspend(requester: NonNullable<ReturnType<typeof getRequester>>): boolean {
+    const roles = requester.roles ?? [];
+    return roles.includes("admin") || roles.includes("manager");
+}
+
+function isDeletedUserProfile(profile: unknown): boolean {
+    if (!profile || typeof profile !== "object") {
+        return false;
+    }
+
+    const candidate = profile as { deleted?: unknown; status?: unknown };
+    return candidate.deleted === true || candidate.status === "deleted";
+}
 
 /**
  * GET /api/users?query=&page=&limit=
@@ -60,6 +105,110 @@ export async function getUserById(_request: Request, response: Response, next: N
 }
 
 /**
+ * GET /api/users/:id/profile
+ * Returns a full profile to admins, or to the authenticated owner.
+ */
+export async function getUserProfile(
+    request: Request<{ id: string }>,
+    response: Response,
+    next: NextFunction
+) {
+    try {
+        const requester = getRequester(request);
+        if (!requester) {
+            return response.status(401).json({ error: "unauthorized" });
+        }
+
+        const target = await getProfileById(request.params.id);
+        if (!target) {
+            return response.status(404).json({ error: "profile not found" });
+        }
+
+        const requesterId = getRequesterId(requester);
+        const requesterProfile =
+            (await getProfileById(requesterId)) ??
+            (requester.email ? await getProfileByEmail(requester.email) : null);
+        const requesterRoles = requester.roles ?? [];
+        const isAdmin = requesterRoles.includes("admin");
+        const isOwner = requesterProfile?.id === target.id || requesterId === target.id;
+
+        if (!isAdmin && !isOwner) {
+            return response.status(403).json({ error: "forbidden" });
+        }
+
+        return response.json(target);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * PATCH /api/users/:id/deleted
+ * Soft-delete/restore a user. Allowed for admins or the target user.
+ */
+export async function setUserDeleted(
+    request: Request<{ id: string }, unknown, { deleted: boolean }>,
+    response: Response,
+    next: NextFunction
+) {
+    try {
+        const requester = getRequester(request);
+        if (!requester) {
+            return response.status(401).json({ error: "unauthorized" });
+        }
+
+        const target = await getProfileById(request.params.id);
+        if (!target) {
+            return response.status(404).json({ error: "profile not found" });
+        }
+
+        if (!(await canRequesterDelete(requester, target.id))) {
+            return response.status(403).json({ error: "forbidden" });
+        }
+
+        const updated = await updateUserDeleted(target.id, request.body.deleted);
+        return response.json(updated);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * PATCH /api/users/:id/suspended
+ * Suspend/unsuspend a user. Allowed for admins and managers.
+ */
+export async function setUserSuspended(
+    request: Request<{ id: string }, unknown, { suspended: boolean }>,
+    response: Response,
+    next: NextFunction
+) {
+    try {
+        const requester = getRequester(request);
+        if (!requester) {
+            return response.status(401).json({ error: "unauthorized" });
+        }
+
+        const target = await getProfileById(request.params.id);
+        if (!target) {
+            return response.status(404).json({ error: "profile not found" });
+        }
+
+        if (!canRequesterSuspend(requester)) {
+            return response.status(403).json({ error: "forbidden" });
+        }
+
+        if (isDeletedUserProfile(target)) {
+            return response.status(400).json({ error: "deleted user cannot be suspended" });
+        }
+
+        const updated = await updateUserSuspended(target.id, request.body.suspended);
+        return response.json(updated);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
  * POST /api/users
  * Blank - we leave it for future implementation.
  */
@@ -89,10 +238,28 @@ export async function updateUser(_request: Request, response: Response, next: Ne
  * DELETE /api/users/:id
  * Blank - we leave it for future implementation.
  */
-export async function deleteUser(_request: Request, response: Response, next: NextFunction) {
+export async function deleteUser(
+    request: Request<{ id: string }>,
+    response: Response,
+    next: NextFunction
+) {
     try {
-        // TODO: delete/deactivate, publish Kafka events
-        return response.status(501).json({ error: "not implemented" });
+        const requester = getRequester(request);
+        if (!requester) {
+            return response.status(401).json({ error: "unauthorized" });
+        }
+
+        const target = await getProfileById(request.params.id);
+        if (!target) {
+            return response.status(404).json({ error: "profile not found" });
+        }
+
+        if (!(await canRequesterDelete(requester, target.id))) {
+            return response.status(403).json({ error: "forbidden" });
+        }
+
+        const updated = await updateUserDeleted(target.id, true);
+        return response.json(updated);
     } catch (error) {
         return next(error);
     }

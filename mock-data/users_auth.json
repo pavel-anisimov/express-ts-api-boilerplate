@@ -1,0 +1,328 @@
+[
+  {
+    "id": "a1",
+    "email": "admin1@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "Admin One",
+    "roles": [
+      "admin"
+    ],
+    "status": "active",
+    "emailVerified": true,
+    "deleted": false
+  },
+  {
+    "id": "a2",
+    "email": "admin2@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "Admin Two",
+    "roles": [
+      "admin"
+    ],
+    "status": "active",
+    "emailVerified": true,
+    "deleted": false
+  },
+  {
+    "id": "o1",
+    "email": "user1@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "Adam One",
+    "roles": [
+      "manager"
+    ],
+    "status": "active",
+    "emailVerified": true,
+    "deleted": false
+  },
+  {
+    "id": "o2",
+    "email": "user2@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "User Two",
+    "roles": [
+      "user"
+    ],
+    "status": "active",
+    "emailVerified": true,
+    "deleted": false
+  },
+  {
+    "id": "o3",
+    "email": "user3@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "User Three",
+    "roles": [
+      "user"
+    ],
+    "status": "active",
+    "emailVerified": true,
+    "deleted": false
+  },
+  {
+    "id": "o4",
+    "email": "user4@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "User Four",
+    "roles": [
+      "user"
+    ],
+    "status": "active",
+    "emailVerified": true,
+    "deleted": false
+  },
+  {
+    "id": "o5",
+    "email": "user5@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "User Five",
+    "roles": [
+      "user"
+    ],
+    "status": "active",
+    "emailVerified": true,
+    "deleted": false
+  },
+  {
+    "id": "b6",
+    "email": "blocked@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "Blocked",
+    "roles": [
+      "user"
+    ],
+    "status": "blocked",
+    "emailVerified": true,
+    "deleted": false
+  },
+  {
+    "id": "p7",
+    "email": "pending@example.com",
+    "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+    "name": "Pending",
+    "roles": [
+      "user"
+    ],
+    "status": "pending_verification",
+    "emailVerified": false,
+    "deleted": false
+  },
+  [
+    {
+      "id": "u1",
+      "email": "alice@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Alice Doe",
+      "roles": [
+        "user"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u2",
+      "email": "bob@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Bob Miller",
+      "roles": [
+        "user"
+      ],
+      "status": "pending",
+      "emailVerified": false,
+      "deleted": false
+    },
+    {
+      "id": "u3",
+      "email": "carol@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Carol Nguyen",
+      "roles": [
+        "user"
+      ],
+      "status": "suspended",
+      "emailVerified": false,
+      "deleted": false
+    },
+    {
+      "id": "u4",
+      "email": "david@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "David Lopez",
+      "roles": [
+        "user"
+      ],
+      "status": "deleted",
+      "emailVerified": false,
+      "deleted": true
+    },
+    {
+      "id": "u5",
+      "email": "eva@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Eva Schmidt",
+      "roles": [
+        "admin"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u6",
+      "email": "frank@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Frank Wong",
+      "roles": [
+        "user"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u7",
+      "email": "george@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "George Brown",
+      "roles": [
+        "user"
+      ],
+      "status": "pending",
+      "emailVerified": false,
+      "deleted": false
+    },
+    {
+      "id": "u8",
+      "email": "hana@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Hana Yamamoto",
+      "roles": [
+        "user"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u9",
+      "email": "ivan@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Ivan Petrov",
+      "roles": [
+        "user"
+      ],
+      "status": "suspended",
+      "emailVerified": false,
+      "deleted": false
+    },
+    {
+      "id": "u10",
+      "email": "julia@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Julia Martinez",
+      "roles": [
+        "admin"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u11",
+      "email": "kevin@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Kevin O'Neil",
+      "roles": [
+        "user"
+      ],
+      "status": "pending",
+      "emailVerified": false,
+      "deleted": false
+    },
+    {
+      "id": "u12",
+      "email": "li@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Li Wei",
+      "roles": [
+        "user"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u13",
+      "email": "maria@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Maria Ivanova",
+      "roles": [
+        "user"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u14",
+      "email": "nick@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Nick Anderson",
+      "roles": [
+        "user"
+      ],
+      "status": "deleted",
+      "emailVerified": false,
+      "deleted": true
+    },
+    {
+      "id": "u15",
+      "email": "olga@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Olga Sokolova",
+      "roles": [
+        "admin"
+      ],
+      "status": "pending",
+      "emailVerified": false,
+      "deleted": false
+    },
+    {
+      "id": "u16",
+      "email": "peter@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Peter Johnson",
+      "roles": [
+        "user"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u17",
+      "email": "quinn@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Quinn Taylor",
+      "roles": [
+        "user"
+      ],
+      "status": "active",
+      "emailVerified": true,
+      "deleted": false
+    },
+    {
+      "id": "u18",
+      "email": "rita@example.com",
+      "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
+      "name": "Rita Costa",
+      "roles": [
+        "user"
+      ],
+      "status": "suspended",
+      "emailVerified": false,
+      "deleted": false
+    }
+  ]
+]

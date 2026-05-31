@@ -43,6 +43,7 @@ export const authService = {
             name,
             roles,
             status: 'active',
+            deleted: false,
             emailVerified: true,
         });
 
@@ -68,6 +69,10 @@ export const authService = {
         const user = await userRepo.findByEmail(email);
         if (!user) {
             throw new HttpError(401, 'Invalid credentials', 'BAD_CREDENTIALS');
+        }
+
+        if (user.deleted || user.status === 'deleted') {
+            throw new HttpError(403, 'User is deleted', 'USER_DELETED');
         }
 
         if (user.status === 'blocked') {

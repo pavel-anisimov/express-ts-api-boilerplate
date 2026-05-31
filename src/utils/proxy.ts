@@ -33,8 +33,6 @@ export function proxyTo(target: string, opts: ProxyOpts = {}): RequestHandler {
         xfwd: true,
 
         logger: {
-            log: (...args: unknown[]) => logger.info(args.map(String).join(' ')),
-            debug: (...args: unknown[]) => logger.debug(args.map(String).join(' ')),
             info: (...args: unknown[]) => logger.info(args.map(String).join(' ')),
             warn: (...args: unknown[]) => logger.warn(args.map(String).join(' ')),
             error: (...args: unknown[]) => logger.error(args.map(String).join(' ')),

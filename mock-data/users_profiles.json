@@ -1,5 +1,428 @@
 [
   {
+    "id": "a1",
+    "email": "admin1@example.com",
+    "username": "admin1",
+    "display_name": "Admin One",
+    "first_name": "Admin",
+    "last_name": "One",
+    "status": "active",
+    "email_verified": true,
+    "roles": [
+      "admin"
+    ],
+    "tenant_id": "t1",
+    "created_at": "2025-09-01T10:00:00Z",
+    "updated_at": "2025-09-02T14:00:00Z",
+    "last_login_at": "2025-09-03T12:30:00Z",
+    "profile": {
+      "location": {
+        "city": "San Francisco",
+        "state": "CA",
+        "country": "USA",
+        "zip": "94105"
+      },
+      "language": "en",
+      "timezone": "America/Los_Angeles",
+      "avatar_url": "https://example.com/avatars/admin1.png",
+      "bio": "Platform administrator with full access to user and system management.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/admin1"
+      },
+      "phone_number": "+1-202-555-0101",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
+    "id": "a2",
+    "email": "admin2@example.com",
+    "username": "admin2",
+    "display_name": "Admin Two",
+    "first_name": "Admin",
+    "last_name": "Two",
+    "status": "active",
+    "email_verified": true,
+    "roles": [
+      "admin"
+    ],
+    "tenant_id": "t1",
+    "created_at": "2025-09-01T10:05:00Z",
+    "updated_at": "2025-09-02T14:05:00Z",
+    "last_login_at": "2025-09-03T13:00:00Z",
+    "profile": {
+      "location": {
+        "city": "Seattle",
+        "state": "WA",
+        "country": "USA",
+        "zip": "98101"
+      },
+      "language": "en",
+      "timezone": "America/Los_Angeles",
+      "avatar_url": "https://example.com/avatars/admin2.png",
+      "bio": "Administrator responsible for platform oversight and account governance.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/admin2"
+      },
+      "phone_number": "+1-202-555-0102",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
+    "id": "o1",
+    "email": "user1@example.com",
+    "username": "user1",
+    "display_name": "Adam One",
+    "first_name": "Adam",
+    "last_name": "One",
+    "status": "active",
+    "email_verified": true,
+    "roles": [
+      "manager"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T11:00:00Z",
+    "updated_at": "2025-09-02T15:00:00Z",
+    "last_login_at": "2025-09-03T14:30:00Z",
+    "profile": {
+      "location": {
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "zip": "73301"
+      },
+      "language": "en",
+      "timezone": "America/Chicago",
+      "avatar_url": "https://example.com/avatars/user1.png",
+      "bio": "Team manager with access to user operations and reporting workflows.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/user1"
+      },
+      "phone_number": "+1-202-555-0103",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": true
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
+    "id": "o2",
+    "email": "user2@example.com",
+    "username": "user2",
+    "display_name": "User Two",
+    "first_name": "User",
+    "last_name": "Two",
+    "status": "active",
+    "email_verified": true,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T11:05:00Z",
+    "updated_at": "2025-09-02T15:05:00Z",
+    "last_login_at": "2025-09-03T14:35:00Z",
+    "profile": {
+      "location": {
+        "city": "Denver",
+        "state": "CO",
+        "country": "USA",
+        "zip": "80202"
+      },
+      "language": "en",
+      "timezone": "America/Denver",
+      "avatar_url": "https://example.com/avatars/user2.png",
+      "bio": "Standard user profile for application testing and RBAC workflows.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/user2"
+      },
+      "phone_number": "+1-202-555-0104",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
+    "id": "o3",
+    "email": "user3@example.com",
+    "username": "user3",
+    "display_name": "User Three",
+    "first_name": "User",
+    "last_name": "Three",
+    "status": "active",
+    "email_verified": true,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t3",
+    "created_at": "2025-09-01T11:10:00Z",
+    "updated_at": "2025-09-02T15:10:00Z",
+    "last_login_at": "2025-09-03T14:40:00Z",
+    "profile": {
+      "location": {
+        "city": "Chicago",
+        "state": "IL",
+        "country": "USA",
+        "zip": "60601"
+      },
+      "language": "en",
+      "timezone": "America/Chicago",
+      "avatar_url": "https://example.com/avatars/user3.png",
+      "bio": "Application user with active account status and verified email.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/user3"
+      },
+      "phone_number": "+1-202-555-0105",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
+    "id": "o4",
+    "email": "user4@example.com",
+    "username": "user4",
+    "display_name": "User Four",
+    "first_name": "User",
+    "last_name": "Four",
+    "status": "active",
+    "email_verified": true,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t3",
+    "created_at": "2025-09-01T11:15:00Z",
+    "updated_at": "2025-09-02T15:15:00Z",
+    "last_login_at": "2025-09-03T14:45:00Z",
+    "profile": {
+      "location": {
+        "city": "Boston",
+        "state": "MA",
+        "country": "USA",
+        "zip": "02110"
+      },
+      "language": "en",
+      "timezone": "America/New_York",
+      "avatar_url": "https://example.com/avatars/user4.png",
+      "bio": "Standard user account for testing profile, preferences, and table display.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/user4"
+      },
+      "phone_number": "+1-202-555-0106",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": true
+      },
+      "privacy": {
+        "email": "public"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
+    "id": "o5",
+    "email": "user5@example.com",
+    "username": "user5",
+    "display_name": "User Five",
+    "first_name": "User",
+    "last_name": "Five",
+    "status": "active",
+    "email_verified": true,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t2",
+    "created_at": "2025-09-01T11:20:00Z",
+    "updated_at": "2025-09-02T15:20:00Z",
+    "last_login_at": "2025-09-03T14:50:00Z",
+    "profile": {
+      "location": {
+        "city": "Portland",
+        "state": "OR",
+        "country": "USA",
+        "zip": "97201"
+      },
+      "language": "en",
+      "timezone": "America/Los_Angeles",
+      "avatar_url": "https://example.com/avatars/user5.png",
+      "bio": "Active user account used for testing normal application behavior.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/user5"
+      },
+      "phone_number": "+1-202-555-0107",
+      "phone_verified": true
+    },
+    "preferences": {
+      "theme": "dark",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
+    "id": "b6",
+    "email": "blocked@example.com",
+    "username": "blocked",
+    "display_name": "Blocked User",
+    "first_name": "Blocked",
+    "last_name": "User",
+    "status": "blocked",
+    "email_verified": true,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t4",
+    "created_at": "2025-09-01T12:00:00Z",
+    "updated_at": "2025-09-02T16:00:00Z",
+    "last_login_at": "2025-09-03T15:00:00Z",
+    "profile": {
+      "location": {
+        "city": "Phoenix",
+        "state": "AZ",
+        "country": "USA",
+        "zip": "85001"
+      },
+      "language": "en",
+      "timezone": "America/Phoenix",
+      "avatar_url": "https://example.com/avatars/blocked.png",
+      "bio": "Blocked account used for testing restricted access and account status handling.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/blocked"
+      },
+      "phone_number": "+1-202-555-0108",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": false,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
+    "id": "p7",
+    "email": "pending@example.com",
+    "username": "pending",
+    "display_name": "Pending User",
+    "first_name": "Pending",
+    "last_name": "User",
+    "status": "pending_verification",
+    "email_verified": false,
+    "roles": [
+      "user"
+    ],
+    "tenant_id": "t4",
+    "created_at": "2025-09-01T12:05:00Z",
+    "updated_at": "2025-09-02T16:05:00Z",
+    "last_login_at": null,
+    "profile": {
+      "location": {
+        "city": "Miami",
+        "state": "FL",
+        "country": "USA",
+        "zip": "33101"
+      },
+      "language": "en",
+      "timezone": "America/New_York",
+      "avatar_url": "https://example.com/avatars/pending.png",
+      "bio": "Pending verification account used for testing onboarding and email verification flows.",
+      "social": {
+        "linkedin": "https://linkedin.com/in/pending"
+      },
+      "phone_number": "+1-202-555-0109",
+      "phone_verified": false
+    },
+    "preferences": {
+      "theme": "light",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "marketing": false
+      },
+      "privacy": {
+        "email": "private"
+      }
+    },
+    "deleted": false,
+    "deleted_at": null
+  },
+  {
     "id": "u1",
     "email": "alice@example.com",
     "username": "alice",
@@ -69,7 +492,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u2",
@@ -141,7 +566,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u3",
@@ -213,7 +640,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u4",
@@ -285,7 +714,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": true,
+    "deleted_at": null
   },
   {
     "id": "u5",
@@ -357,7 +788,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u6",
@@ -429,7 +862,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u7",
@@ -501,7 +936,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u8",
@@ -573,7 +1010,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u9",
@@ -645,7 +1084,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u10",
@@ -717,7 +1158,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u11",
@@ -789,7 +1232,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u12",
@@ -861,7 +1306,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u13",
@@ -933,7 +1380,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u14",
@@ -1005,7 +1454,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": true,
+    "deleted_at": null
   },
   {
     "id": "u15",
@@ -1077,7 +1528,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u16",
@@ -1149,7 +1602,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u17",
@@ -1221,7 +1676,9 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   },
   {
     "id": "u18",
@@ -1293,6 +1750,8 @@
     "terms_version": "v1.2",
     "terms_accepted_at": "2025-09-01T10:00:05Z",
     "privacy_accepted_at": "2025-09-01T10:00:05Z",
-    "feature_gates": []
+    "feature_gates": [],
+    "deleted": false,
+    "deleted_at": null
   }
 ]

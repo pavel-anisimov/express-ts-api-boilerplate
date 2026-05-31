@@ -33,3 +33,6 @@ logs/
 # Misc
 *.tsbuildinfo
 
+.agents/
+.codex/
+

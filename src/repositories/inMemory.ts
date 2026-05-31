@@ -2,46 +2,67 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { v4 as uuid } from 'uuid';
-import bcrypt from 'bcryptjs';
 
-import type { Role, User, UserStatus } from '../types/models';
+import type { Role, User } from '../types/models';
 
-const users: User[] = [];
+type InMemoryUserStatus = 'active' | 'blocked' | 'pending' | 'pending_verification' | 'suspended' | 'deleted';
+type InMemoryUser = Omit<User, 'status' | 'deleted'> & {
+    status: InMemoryUserStatus;
+    deleted: boolean;
+};
+
+const users: InMemoryUser[] = [];
+
+function flattenUsers(raw: unknown[]): unknown[] {
+    return raw.flatMap((user) => Array.isArray(user) ? user : [user]);
+}
+
+function toUserStatus(status: unknown): InMemoryUserStatus {
+    return (
+        status === 'active' ||
+        status === 'blocked' ||
+        status === 'pending' ||
+        status === 'pending_verification' ||
+        status === 'suspended' ||
+        status === 'deleted'
+    ) ? status : 'active';
+}
 
 /**
- * Load mock data from mock-data/users.json
+ * Load mock auth data from mock-data/users_auth.json
  * The format of each element is:
  * {
- *   email: string; password: string; name: string;
- *   roles: Role[]; status: UserStatus; emailVerified: boolean;
+ *   email: string; passwordHash: string; name: string;
+ *   roles: Role[]; status: InMemoryUserStatus; deleted: boolean; emailVerified: boolean;
  * }
- * The password in JSON is stored as plaintext ONLY for mocks - we hash it when loading.
  */
 function seedFromMock() {
     try {
-        const p = path.join(process.cwd(), 'mock-data', 'users.json');
+        const p = path.join(process.cwd(), 'mock-data', 'users_auth.json');
         if (!fs.existsSync(p)) {
             return;
         }
 
-        const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Array<{
+        const raw = flattenUsers(JSON.parse(fs.readFileSync(p, 'utf8')) as unknown[]) as Array<{
             email: string;
-            password: string;
+            passwordHash: string;
             name: string;
             roles: Role[];
-            status: UserStatus;
+            status: unknown;
+            deleted?: boolean;
             emailVerified: boolean;
         }>;
 
         for (const m of raw) {
-            const passwordHash = bcrypt.hashSync(m.password, 10);
+            const status = toUserStatus(m.status);
             users.push({
                 id: uuid(),
                 email: m.email,
-                passwordHash,
+                passwordHash: m.passwordHash,
                 name: m.name,
                 roles: m.roles,
-                status: m.status,
+                status,
+                deleted: m.deleted ?? status === 'deleted',
                 emailVerified: m.emailVerified,
                 createdAt: new Date().toISOString(),
             });
@@ -65,8 +86,8 @@ export const userRepo = {
      * @param {Omit<User, 'id' | 'createdAt'>} data - The user's data excluding the 'id' and 'createdAt' properties.
      * @return {Promise<User>} A promise that resolves to the newly created user object.
      */
-    async create(data: Omit<User, 'id' | 'createdAt'>): Promise<User> {
-        const user: User = { id: uuid(), createdAt: new Date().toISOString(), ...data };
+    async create(data: Omit<InMemoryUser, 'id' | 'createdAt'>): Promise<InMemoryUser> {
+        const user: InMemoryUser = { id: uuid(), createdAt: new Date().toISOString(), ...data };
         users.push(user);
 
         return user;
@@ -78,7 +99,7 @@ export const userRepo = {
      * @param {string} email - The email address of the user to find.
      * @return {Promise<User|null>} A promise that resolves to the user object if found, otherwise null.
      */
-    async findByEmail(email: string): Promise<User | null> {
+    async findByEmail(email: string): Promise<InMemoryUser | null> {
         return users.find((user) => user.email === email) ?? null;
     },
 
@@ -88,7 +109,7 @@ export const userRepo = {
      * @param {string} id - The unique identifier of the user to be retrieved.
      * @return {Promise<User | null>} A promise that resolves to the user object if found, or null if no user matches the provided identifier.
      */
-    async findById(id: string): Promise<User | null> {
+    async findById(id: string): Promise<InMemoryUser | null> {
         return users.find((user) => user.id === id) ?? null;
     },
 
@@ -99,7 +120,7 @@ export const userRepo = {
      * @param {Partial<Omit<User, 'id' | 'createdAt'>>} patch - An object containing the updated fields of the user, excluding 'id' and 'createdAt'.
      * @return {Promise<User | null>} - A promise that resolves to the updated user object if the user is found, otherwise null.
      */
-    async update(id: string, patch: Partial<Omit<User, 'id' | 'createdAt'>>): Promise<User | null> {
+    async update(id: string, patch: Partial<Omit<InMemoryUser, 'id' | 'createdAt'>>): Promise<InMemoryUser | null> {
         const user = await this.findById(id);
         if (!user) {
             return null;
@@ -110,7 +131,7 @@ export const userRepo = {
         return user;
     },
 
-    async list(): Promise<User[]> {
+    async list(): Promise<InMemoryUser[]> {
         return users;
     },
 };

@@ -1,10 +1,13 @@
 // src/controllers/auth.ts
 import type { Request, Response, NextFunction } from "express";
-import jwt, { type SignOptions, type JwtPayload, TokenExpiredError } from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import jwt, { type SignOptions, type JwtPayload } from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 
-import { findByEmail /*, getById */ } from "../repositories/usersRepo";
+import { findByEmail, getProfileByEmail, getProfileById, updateOwnProfile } from "../repositories/usersRepo";
 import { env } from "../config/env";
+
+const { TokenExpiredError } = jwt;
 
 type Role = string;
 interface JwtClaims extends JwtPayload {
@@ -16,9 +19,44 @@ interface JwtClaims extends JwtPayload {
 }
 // What do auth middlewares put in request
 type RequestWithAuth = Request & {
-    user?: JwtClaims;
+    user?: {
+        id: string;
+        email?: string;
+        name?: string;
+        roles: string[];
+    };
     auth?: JwtClaims;
 };
+
+type RequesterIdentity = {
+    id?: string;
+    sub?: string;
+    email?: string;
+};
+
+function requesterFrom(request: Request): RequesterIdentity | null {
+    const authReq = request as RequestWithAuth;
+    const fromReq = authReq.user ?? authReq.auth;
+    if (!fromReq) {
+        return null;
+    }
+
+    const requester: RequesterIdentity = {};
+
+    if ("id" in fromReq && typeof fromReq.id === "string") {
+        requester.id = fromReq.id;
+    }
+
+    if ("sub" in fromReq && typeof fromReq.sub === "string") {
+        requester.sub = fromReq.sub;
+    }
+
+    if (typeof fromReq.email === "string") {
+        requester.email = fromReq.email;
+    }
+
+    return requester;
+}
 
 export async function login(request: Request, response: Response, next: NextFunction) {
     try {
@@ -29,11 +67,11 @@ export async function login(request: Request, response: Response, next: NextFunc
 
         const user = await findByEmail(String(email));
 
-        if (!user || user.password !== String(password)) {
+        if (!user || !(await bcrypt.compare(String(password), user.passwordHash))) {
             return response.status(401).json({ error: "bad credentials" });
         }
 
-        if (user.status !== "active") {
+        if (user.deleted || user.status !== "active") {
             return response.status(403).json({ error: "user is not active" });
         }
 
@@ -50,7 +88,7 @@ export async function login(request: Request, response: Response, next: NextFunc
         const accessToken = jwt.sign(accessPayload, env.JWT_SECRET, accessOptions);
         const refreshToken = jwt.sign(refreshPayload, env.JWT_SECRET, refreshOptions);
 
-        const { password: _hidden, ...safe } = user;
+        const { passwordHash: _hidden, ...safe } = user;
 
         return response.json({ accessToken, refreshToken, user: safe });
     } catch (error) {
@@ -88,19 +126,43 @@ export async function logout(_request: Request, response: Response) {
     return response.status(204).end();
 }
 
-/** GET /auth/me - return the current user from req.user/req.auth */
-export async function me(request: Request, response: Response) {
-    const authReq = request as RequestWithAuth;
-    const fromReq = authReq.user ?? authReq.auth;
-    if (!fromReq) {
-        return response.status(401).json({ error: "unauthorized" });
-    }
+/** GET /api/auth/me - return the current user from req.user/req.auth */
+export async function me(request: Request, response: Response, next: NextFunction) {
+    try {
+        const requester = requesterFrom(request);
+        if (!requester) {
+            return response.status(401).json({ error: "unauthorized" });
+        }
 
-    // Bringing it to a safe form
-    return response.json({
-        id: fromReq.id ?? fromReq.sub,
-        email: fromReq.email ?? null,
-        name: fromReq.name ?? null,
-        roles: Array.isArray(fromReq.roles) ? fromReq.roles : [],
-    });
+        const profile =
+            (requester.id || requester.sub ? await getProfileById(requester.id ?? requester.sub ?? "") : null) ??
+            (requester.email ? await getProfileByEmail(requester.email) : null);
+
+        if (!profile) {
+            return response.status(404).json({ error: "profile not found" });
+        }
+
+        return response.json(profile);
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/** PATCH /api/auth/me/profile - update editable fields on the authenticated user's own profile */
+export async function updateMyProfile(request: Request, response: Response, next: NextFunction) {
+    try {
+        const requester = requesterFrom(request);
+        if (!requester) {
+            return response.status(401).json({ error: "unauthorized" });
+        }
+
+        const profile = await updateOwnProfile(requester, request.body);
+        if (!profile) {
+            return response.status(404).json({ error: "profile not found" });
+        }
+
+        return response.json(profile);
+    } catch (error) {
+        return next(error);
+    }
 }
