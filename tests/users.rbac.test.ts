@@ -13,6 +13,13 @@ describe('Users', () => {
         await request(app).get('/api/users').expect(401);
     });
 
+    it('rejects invalid tokens when listing users', async () => {
+        await request(app)
+            .get('/api/users')
+            .set('authorization', 'Bearer invalid-token')
+            .expect(401);
+    });
+
     it('lists users for an authenticated requester', async () => {
         const adminToken = await login('admin1@example.com', 'password');
 
@@ -41,6 +48,19 @@ describe('Users', () => {
         expect(response.body.items.some((user: { email?: string }) => user.email === 'alice@example.com')).toBe(true);
     });
 
+    it('returns an empty page when search has no matches', async () => {
+        const adminToken = await login('admin1@example.com', 'password');
+
+        const response = await request(app)
+            .get('/api/users')
+            .query({ q: 'not-existing-user' })
+            .set('authorization', `Bearer ${adminToken}`)
+            .expect(200);
+
+        expect(response.body.items).toEqual([]);
+        expect(response.body.total).toBe(0);
+    });
+
     it('paginates users', async () => {
         const adminToken = await login('admin1@example.com', 'password');
 
@@ -53,5 +73,38 @@ describe('Users', () => {
         expect(response.body.page).toBe(2);
         expect(response.body.limit).toBe(3);
         expect(response.body.items).toHaveLength(3);
+    });
+
+    it('normalizes invalid pagination values', async () => {
+        const adminToken = await login('admin1@example.com', 'password');
+
+        const response = await request(app)
+            .get('/api/users')
+            .query({ page: 0, limit: 0 })
+            .set('authorization', `Bearer ${adminToken}`)
+            .expect(200);
+
+        expect(response.body.page).toBe(1);
+        expect(response.body.limit).toBe(20);
+        expect(response.body.items).toHaveLength(20);
+    });
+
+    it('rejects normal users reading another user profile', async () => {
+        const userToken = await login('alice@example.com', 'password');
+
+        await request(app)
+            .get('/api/users/a1/profile')
+            .set('authorization', `Bearer ${userToken}`)
+            .expect(403);
+    });
+
+    it('rejects suspending deleted users', async () => {
+        const adminToken = await login('admin1@example.com', 'password');
+
+        await request(app)
+            .patch('/api/users/u4/suspended')
+            .set('authorization', `Bearer ${adminToken}`)
+            .send({ suspended: true })
+            .expect(400);
     });
 });

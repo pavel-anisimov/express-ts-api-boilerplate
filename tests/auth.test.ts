@@ -22,6 +22,35 @@ describe('Auth', () => {
             .expect(401);
     });
 
+    it('rejects missing login credentials', async () => {
+        await request(app)
+            .post('/api/auth/login')
+            .send({ email: 'admin1@example.com' })
+            .expect(400);
+    });
+
+    it('rejects refresh without refresh token', async () => {
+        await request(app)
+            .post('/api/auth/refresh')
+            .send({})
+            .expect(400);
+    });
+
+    it('returns current profile for a valid token', async () => {
+        const loginResponse = await request(app)
+            .post('/api/auth/login')
+            .send({ email: 'admin1@example.com', password: 'password' })
+            .expect(200);
+
+        const response = await request(app)
+            .get('/api/auth/me')
+            .set('authorization', `Bearer ${loginResponse.body.accessToken}`)
+            .expect(200);
+
+        expect(response.body.email).toBe('admin1@example.com');
+        expect(response.body.passwordHash).toBeUndefined();
+    });
+
     it('rejects inactive mock users', async () => {
         await request(app)
             .post('/api/auth/login')
