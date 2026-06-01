@@ -73,6 +73,10 @@ export async function listUsers(
             items = items.filter((user) =>
                 user.email.toLowerCase().includes(searchRaw) ||
                 (user.name ?? "").toLowerCase().includes(searchRaw) ||
+                (user.username ?? "").toLowerCase().includes(searchRaw) ||
+                (user.display_name ?? "").toLowerCase().includes(searchRaw) ||
+                (user.first_name ?? "").toLowerCase().includes(searchRaw) ||
+                (user.last_name ?? "").toLowerCase().includes(searchRaw) ||
                 (user.status ?? "").toLowerCase().includes(searchRaw) ||
                 (user.roles ?? []).some((role) => role.toLowerCase().includes(searchRaw))
             );

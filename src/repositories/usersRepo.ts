@@ -1,16 +1,31 @@
 // src/repositories/usersRepo.ts
 import { randomUUID } from "node:crypto";
 
-import authRaw from "../../mock-data/users_auth.json" with { type: "json" };
-import profilesRaw from "../../mock-data/users_profiles.json" with { type: "json" };
 import type { AuthUser, Role, UserProfile } from "../types/models";
+import { loadMockItems } from "../utils/mockDataLoader";
 
 type MockUserStatus = "active" | "blocked" | "pending" | "pending_verification" | "suspended" | "deleted";
 type MockAuthUser = Omit<AuthUser, "status" | "deleted"> & {
     status: MockUserStatus;
     deleted: boolean;
 };
-export type UserSafe = Omit<MockAuthUser, "passwordHash">;
+export type UserSafe = {
+    id: string;
+    email: string;
+    name?: string;
+    username?: string | null;
+    display_name?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
+    roles: string[];
+    status: string;
+    deleted: boolean;
+    emailVerified?: boolean;
+    email_verified?: boolean;
+    tenant_id?: string | null;
+    created_at?: string | null;
+    last_login_at?: string | null;
+};
 type MockUserProfile = Omit<UserProfile, "status" | "deleted" | "deleted_at"> & {
     status: string;
     deleted: boolean;
@@ -18,23 +33,20 @@ type MockUserProfile = Omit<UserProfile, "status" | "deleted" | "deleted_at"> & 
 };
 export type UserProfileDto = MockUserProfile;
 
-const _CACHE: MockAuthUser[] | null = null;
-const authRows = flattenUsers(authRaw as unknown[]).filter((user): user is Record<string, unknown> => {
-    if (!user || typeof user !== "object" || Array.isArray(user)) {
-        return false;
-    }
+const authRows = loadMockRecords("auth/auth-users.json");
+const userListRows = loadMockRecords("auth/user-list-items.json");
+const profileRows = loadMockRecords("auth/user-profiles.json");
 
-    const candidate = user as Record<string, unknown>;
-    return typeof candidate.id === "string" && typeof candidate.email === "string";
-});
-const profileRows = (profilesRaw as unknown[]).filter((user): user is Record<string, unknown> => {
-    if (!user || typeof user !== "object" || Array.isArray(user)) {
-        return false;
-    }
+function loadMockRecords(relativeFilePath: string): Record<string, unknown>[] {
+    return loadMockItems<Record<string, unknown>>(relativeFilePath).filter((user): user is Record<string, unknown> => {
+        if (!user || typeof user !== "object" || Array.isArray(user)) {
+            return false;
+        }
 
-    const candidate = user as Record<string, unknown>;
-    return typeof candidate.id === "string" && typeof candidate.email === "string";
-});
+        const candidate = user as Record<string, unknown>;
+        return typeof candidate.id === "string" && typeof candidate.email === "string";
+    });
+}
 
 export type EditableUserProfilePatch = {
     display_name?: string | null;
@@ -100,10 +112,6 @@ function isUserStatus(status: unknown): status is MockUserStatus {
     );
 }
 
-function flattenUsers(raw: unknown[]): unknown[] {
-    return raw.flatMap((user) => Array.isArray(user) ? user : [user]);
-}
-
 function toRecord(user: unknown): MockAuthUser {
     const rawUser = user as RawUser;
     const id =
@@ -149,6 +157,23 @@ function normalizeAuthUsers(): MockAuthUser[] {
 
 function normalizeProfileUsers(): MockAuthUser[] {
     return profileRows.map(toRecord);
+}
+
+function normalizeListUser(user: Record<string, unknown>): UserSafe {
+    const { passwordHash: _passwordHash, security: _security, metadata: _metadata, ...safe } = user;
+    const status = stringOrDefault(safe.status, "active");
+
+    return {
+        ...safe,
+        id: stringOrDefault(safe.id, ""),
+        email: stringOrDefault(safe.email, ""),
+        name: stringOrDefault(safe.name, stringOrDefault(safe.display_name, "")),
+        roles: stringArrayOrDefault(safe.roles),
+        status,
+        deleted: booleanOrDefault(safe.deleted, status === "deleted"),
+        emailVerified: booleanOrDefault(safe.emailVerified, safe.email_verified === true),
+        email_verified: booleanOrDefault(safe.email_verified, safe.emailVerified === true),
+    };
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -271,6 +296,10 @@ function findProfileRowById(id: string): Record<string, unknown> | null {
     return profileRows.find(user => user.id === id) ?? null;
 }
 
+function findListRowById(id: string): Record<string, unknown> | null {
+    return userListRows.find(user => user.id === id) ?? null;
+}
+
 function findAuthRowById(id: string): Record<string, unknown> | null {
     return authRows.find(user => user.id === id) ?? null;
 }
@@ -283,11 +312,21 @@ function findAuthRowByEmail(email: string): Record<string, unknown> | null {
     return authRows.find(user => typeof user.email === "string" && user.email.toLowerCase() === email.toLowerCase()) ?? null;
 }
 
-function syncAuthRowForProfile(profile: Record<string, unknown>): Record<string, unknown> | null {
+function findListRowByEmail(email: string): Record<string, unknown> | null {
+    return userListRows.find(user => typeof user.email === "string" && user.email.toLowerCase() === email.toLowerCase()) ?? null;
+}
+
+function syncRowsForProfile(profile: Record<string, unknown>): Record<string, unknown>[] {
     const id = typeof profile.id === "string" ? profile.id : "";
     const email = typeof profile.email === "string" ? profile.email : "";
+    const rows = [
+        id ? findAuthRowById(id) : null,
+        email ? findAuthRowByEmail(email) : null,
+        id ? findListRowById(id) : null,
+        email ? findListRowByEmail(email) : null,
+    ];
 
-    return (id ? findAuthRowById(id) : null) ?? (email ? findAuthRowByEmail(email) : null);
+    return rows.filter((row, index): row is Record<string, unknown> => Boolean(row) && rows.indexOf(row) === index);
 }
 
 function applyDeletedState(user: Record<string, unknown>, deleted: boolean): void {
@@ -364,7 +403,7 @@ function applyEditableProfilePatch(profile: Record<string, unknown>, patch: Edit
 
 /** For /api/users - a safe list without passwords */
 export async function getAllUsers(): Promise<UserSafe[]> {
-    return normalizeProfileUsers().map(({ passwordHash: _passwordHash, ...safe }) => safe);
+    return userListRows.map(normalizeListUser);
 }
 
 /** For /api/auth/login - search with password hash */
@@ -372,14 +411,14 @@ export async function findByEmail(email: string): Promise<MockAuthUser | null> {
     return normalizeAuthUsers().find(user => user.email.toLowerCase() === String(email).toLowerCase()) ?? null;
 }
 
-/** (optional) get secure user by id */
+/** (optional) get safe user by id */
 export async function getById(id: string): Promise<UserSafe | null> {
-    const user = normalizeProfileUsers().find(user => user.id === id);
+    const user = findListRowById(id) ?? findProfileRowById(id);
     if (!user) {
         return null;
     }
-    const { passwordHash: _passwordHash, ...safe } = user;
-    return safe;
+
+    return normalizeListUser(user);
 }
 
 /** Full profile for frontend profile pages */
@@ -419,9 +458,8 @@ export async function updateUserDeleted(id: string, deleted: boolean): Promise<U
 
     applyDeletedState(profile, deleted);
 
-    const auth = syncAuthRowForProfile(profile);
-    if (auth) {
-        applyDeletedState(auth, deleted);
+    for (const row of syncRowsForProfile(profile)) {
+        applyDeletedState(row, deleted);
     }
 
     return normalizeFullProfile(profile);
@@ -436,9 +474,8 @@ export async function updateUserSuspended(id: string, suspended: boolean): Promi
 
     applySuspendedState(profile, suspended);
 
-    const auth = syncAuthRowForProfile(profile);
-    if (auth) {
-        applySuspendedState(auth, suspended);
+    for (const row of syncRowsForProfile(profile)) {
+        applySuspendedState(row, suspended);
     }
 
     return normalizeFullProfile(profile);
