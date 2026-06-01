@@ -1,0 +1,311 @@
+[
+  {
+    "__mock_comment": true,
+    "file": "auth-me.json",
+    "purpose": "Safe AuthMeDto response for GET /auth/me.",
+    "safe_to_return_to_frontend": true,
+    "contains_sensitive_mock_data": false,
+    "notes": [
+      "Used by frontend AuthProvider, navbar, and RBAC menu.",
+      "Keep this object small.",
+      "Do not include passwordHash, security internals, metadata, IP addresses, or user agent."
+    ]
+  },
+  {
+    "id": "a1",
+    "email": "admin1@example.com",
+    "username": "admin1",
+    "display_name": "Admin One",
+    "avatar_url": "https://example.com/avatars/admin1.png",
+    "roles": ["admin"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t1"
+  },
+  {
+    "id": "a2",
+    "email": "admin2@example.com",
+    "username": "admin2",
+    "display_name": "Admin Two",
+    "avatar_url": "https://example.com/avatars/admin2.png",
+    "roles": ["admin"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t1"
+  },
+  {
+    "id": "o1",
+    "email": "user1@example.com",
+    "username": "user1",
+    "display_name": "Adam One",
+    "avatar_url": "https://example.com/avatars/user1.png",
+    "roles": ["manager"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "o2",
+    "email": "user2@example.com",
+    "username": "user2",
+    "display_name": "User Two",
+    "avatar_url": "https://example.com/avatars/user2.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "o3",
+    "email": "user3@example.com",
+    "username": "user3",
+    "display_name": "User Three",
+    "avatar_url": "https://example.com/avatars/user3.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "o4",
+    "email": "user4@example.com",
+    "username": "user4",
+    "display_name": "User Four",
+    "avatar_url": "https://example.com/avatars/user4.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "o5",
+    "email": "user5@example.com",
+    "username": "user5",
+    "display_name": "User Five",
+    "avatar_url": "https://example.com/avatars/user5.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "b6",
+    "email": "blocked@example.com",
+    "username": "blocked",
+    "display_name": "Blocked User",
+    "avatar_url": "https://example.com/avatars/blocked.png",
+    "roles": ["user"],
+    "status": "blocked",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "p7",
+    "email": "pending@example.com",
+    "username": "pending",
+    "display_name": "Pending User",
+    "avatar_url": "https://example.com/avatars/pending.png",
+    "roles": ["user"],
+    "status": "pending_verification",
+    "email_verified": false,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u1",
+    "email": "alice@example.com",
+    "username": "alice",
+    "display_name": "AliceD",
+    "avatar_url": "https://example.com/avatars/alice.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "u2",
+    "email": "bob@example.com",
+    "username": "bob",
+    "display_name": "Bobby",
+    "avatar_url": "https://example.com/avatars/bob.png",
+    "roles": ["user"],
+    "status": "pending",
+    "email_verified": false,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u3",
+    "email": "carol@example.com",
+    "username": "carol",
+    "display_name": "Caro",
+    "avatar_url": "https://example.com/avatars/carol.png",
+    "roles": ["user"],
+    "status": "suspended",
+    "email_verified": false,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "u4",
+    "email": "david@example.com",
+    "username": "david",
+    "display_name": "Dave",
+    "avatar_url": "https://example.com/avatars/david.png",
+    "roles": ["user"],
+    "status": "deleted",
+    "email_verified": false,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u5",
+    "email": "eva@example.com",
+    "username": "eva",
+    "display_name": "Evie",
+    "avatar_url": "https://example.com/avatars/eva.png",
+    "roles": ["admin"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u6",
+    "email": "frank@example.com",
+    "username": "frank",
+    "display_name": "Franky",
+    "avatar_url": "https://example.com/avatars/frank.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "u7",
+    "email": "george@example.com",
+    "username": "george",
+    "display_name": "Geo",
+    "avatar_url": "https://example.com/avatars/george.png",
+    "roles": ["user"],
+    "status": "pending",
+    "email_verified": false,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u8",
+    "email": "hana@example.com",
+    "username": "hana",
+    "display_name": "Hana",
+    "avatar_url": "https://example.com/avatars/hana.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "u9",
+    "email": "ivan@example.com",
+    "username": "ivan",
+    "display_name": "Vanya",
+    "avatar_url": "https://example.com/avatars/ivan.png",
+    "roles": ["user"],
+    "status": "suspended",
+    "email_verified": false,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u10",
+    "email": "julia@example.com",
+    "username": "julia",
+    "display_name": "Jules",
+    "avatar_url": "https://example.com/avatars/julia.png",
+    "roles": ["admin"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t1"
+  },
+  {
+    "id": "u11",
+    "email": "kevin@example.com",
+    "username": "kevin",
+    "display_name": "Kev",
+    "avatar_url": "https://example.com/avatars/kevin.png",
+    "roles": ["user"],
+    "status": "pending",
+    "email_verified": false,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "u12",
+    "email": "li@example.com",
+    "username": "li",
+    "display_name": "LiLi",
+    "avatar_url": "https://example.com/avatars/li.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u13",
+    "email": "maria@example.com",
+    "username": "maria",
+    "display_name": "Masha",
+    "avatar_url": "https://example.com/avatars/maria.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "u14",
+    "email": "nick@example.com",
+    "username": "nick",
+    "display_name": "Nico",
+    "avatar_url": "https://example.com/avatars/nick.png",
+    "roles": ["user"],
+    "status": "deleted",
+    "email_verified": false,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u15",
+    "email": "olga@example.com",
+    "username": "olga",
+    "display_name": "Olya",
+    "avatar_url": "https://example.com/avatars/olga.png",
+    "roles": ["admin"],
+    "status": "pending",
+    "email_verified": false,
+    "tenant_id": "t1"
+  },
+  {
+    "id": "u16",
+    "email": "peter@example.com",
+    "username": "peter",
+    "display_name": "Pete",
+    "avatar_url": "https://example.com/avatars/peter.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t2"
+  },
+  {
+    "id": "u17",
+    "email": "quinn@example.com",
+    "username": "quinn",
+    "display_name": "Q",
+    "avatar_url": "https://example.com/avatars/quinn.png",
+    "roles": ["user"],
+    "status": "active",
+    "email_verified": true,
+    "tenant_id": "t3"
+  },
+  {
+    "id": "u18",
+    "email": "rita@example.com",
+    "username": "rita",
+    "display_name": "Riri",
+    "avatar_url": "https://example.com/avatars/rita.png",
+    "roles": ["user"],
+    "status": "suspended",
+    "email_verified": false,
+    "tenant_id": "t2"
+  }
+]

@@ -1,0 +1,446 @@
+[
+  {
+    "__mock_comment": true,
+    "file": "public-users.json",
+    "purpose": "Safe public user card DTO for forum posts, comments, and other public views.",
+    "safe_to_return_to_frontend": true,
+    "contains_sensitive_mock_data": false,
+    "notes": [
+      "This is what other users may see.",
+      "Do not include email, phone number, date of birth, security data, login data, metadata, IP addresses, or user agent.",
+      "Useful for forum author cards, comments, public member pages, and activity feeds."
+    ]
+  },
+  {
+    "id": "a1",
+    "username": "admin1",
+    "display_name": "Admin One",
+    "avatar_url": "https://example.com/avatars/admin1.png",
+    "bio": "Platform administrator with full access to user and system management.",
+    "roles": ["admin"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-01-10T08:00:00Z"
+  },
+  {
+    "id": "a2",
+    "username": "admin2",
+    "display_name": "Admin Two",
+    "avatar_url": "https://example.com/avatars/admin2.png",
+    "bio": "Administrator responsible for platform oversight and account governance.",
+    "roles": ["admin"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-02-14T10:00:00Z"
+  },
+  {
+    "id": "o1",
+    "username": "user1",
+    "display_name": "Adam One",
+    "avatar_url": "https://example.com/avatars/user1.png",
+    "bio": "Team manager with access to user operations and reporting workflows.",
+    "roles": ["manager"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-03-01T08:00:00Z"
+  },
+  {
+    "id": "o2",
+    "username": "user2",
+    "display_name": "User Two",
+    "avatar_url": "https://example.com/avatars/user2.png",
+    "bio": "Standard user profile for application testing and RBAC workflows.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-04-12T10:00:00Z"
+  },
+  {
+    "id": "o3",
+    "username": "user3",
+    "display_name": "User Three",
+    "avatar_url": "https://example.com/avatars/user3.png",
+    "bio": "Application user with active account status and verified email.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-05-20T09:00:00Z"
+  },
+  {
+    "id": "o4",
+    "username": "user4",
+    "display_name": "User Four",
+    "avatar_url": "https://example.com/avatars/user4.png",
+    "bio": "Standard user account for testing profile, preferences, and table display.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-06-15T15:00:00Z"
+  },
+  {
+    "id": "o5",
+    "username": "user5",
+    "display_name": "User Five",
+    "avatar_url": "https://example.com/avatars/user5.png",
+    "bio": "Active user account used for testing normal application behavior.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-07-10T10:00:00Z"
+  },
+  {
+    "id": "b6",
+    "username": "blocked",
+    "display_name": "Blocked User",
+    "avatar_url": "https://example.com/avatars/blocked.png",
+    "bio": "Blocked account used for testing restricted access and account status handling.",
+    "roles": ["user"],
+    "status": "blocked",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-08-05T09:00:00Z"
+  },
+  {
+    "id": "p7",
+    "username": "pending",
+    "display_name": "Pending User",
+    "avatar_url": "https://example.com/avatars/pending.png",
+    "bio": "Pending verification account used for testing onboarding and email verification flows.",
+    "roles": ["user"],
+    "status": "pending_verification",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2026-05-28T08:00:00Z"
+  },
+  {
+    "id": "u1",
+    "username": "alice",
+    "display_name": "AliceD",
+    "avatar_url": "https://example.com/avatars/alice.png",
+    "bio": "Bio for Alice.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-09-01T10:00:00Z"
+  },
+  {
+    "id": "u2",
+    "username": "bob",
+    "display_name": "Bobby",
+    "avatar_url": "https://example.com/avatars/bob.png",
+    "bio": "Bio for Bob.",
+    "roles": ["user"],
+    "status": "pending",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2026-05-29T10:00:00Z"
+  },
+  {
+    "id": "u3",
+    "username": "carol",
+    "display_name": "Caro",
+    "avatar_url": "https://example.com/avatars/carol.png",
+    "bio": "Bio for Carol.",
+    "roles": ["user"],
+    "status": "suspended",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-10-15T09:00:00Z"
+  },
+  {
+    "id": "u4",
+    "username": "david",
+    "display_name": "Dave",
+    "avatar_url": "https://example.com/avatars/david.png",
+    "bio": "Bio for David.",
+    "roles": ["user"],
+    "status": "deleted",
+    "profile": {
+      "location": {
+        "country": "USA"
+      },
+      "language": "en"
+    },
+    "created_at": "2025-11-20T14:00:00Z"
+  },
+  {
+    "id": "u5",
+    "username": "eva",
+    "display_name": "Evie",
+    "avatar_url": "https://example.com/avatars/eva.png",
+    "bio": "Bio for Eva.",
+    "roles": ["admin"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "Germany"
+      },
+      "language": "de"
+    },
+    "created_at": "2025-09-01T10:00:00Z"
+  },
+  {
+    "id": "u6",
+    "username": "frank",
+    "display_name": "Franky",
+    "avatar_url": "https://example.com/avatars/frank.png",
+    "bio": "Bio for Frank.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "China"
+      },
+      "language": "zh"
+    },
+    "created_at": "2025-12-05T08:00:00Z"
+  },
+  {
+    "id": "u7",
+    "username": "george",
+    "display_name": "Geo",
+    "avatar_url": "https://example.com/avatars/george.png",
+    "bio": "Bio for George.",
+    "roles": ["user"],
+    "status": "pending",
+    "profile": {
+      "location": {
+        "country": "UK"
+      },
+      "language": "en"
+    },
+    "created_at": "2026-05-30T11:00:00Z"
+  },
+  {
+    "id": "u8",
+    "username": "hana",
+    "display_name": "Hana",
+    "avatar_url": "https://example.com/avatars/hana.png",
+    "bio": "Bio for Hana.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "Japan"
+      },
+      "language": "ja"
+    },
+    "created_at": "2026-01-15T15:00:00Z"
+  },
+  {
+    "id": "u9",
+    "username": "ivan",
+    "display_name": "Vanya",
+    "avatar_url": "https://example.com/avatars/ivan.png",
+    "bio": "Bio for Ivan.",
+    "roles": ["user"],
+    "status": "suspended",
+    "profile": {
+      "location": {
+        "country": "Russia"
+      },
+      "language": "ru"
+    },
+    "created_at": "2026-02-10T09:00:00Z"
+  },
+  {
+    "id": "u10",
+    "username": "julia",
+    "display_name": "Jules",
+    "avatar_url": "https://example.com/avatars/julia.png",
+    "bio": "Bio for Julia.",
+    "roles": ["admin"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "Spain"
+      },
+      "language": "es"
+    },
+    "created_at": "2026-03-01T10:00:00Z"
+  },
+  {
+    "id": "u11",
+    "username": "kevin",
+    "display_name": "Kev",
+    "avatar_url": "https://example.com/avatars/kevin.png",
+    "bio": "Bio for Kevin.",
+    "roles": ["user"],
+    "status": "pending",
+    "profile": {
+      "location": {
+        "country": "Ireland"
+      },
+      "language": "en"
+    },
+    "created_at": "2026-05-31T09:00:00Z"
+  },
+  {
+    "id": "u12",
+    "username": "li",
+    "display_name": "LiLi",
+    "avatar_url": "https://example.com/avatars/li.png",
+    "bio": "Bio for Li.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "China"
+      },
+      "language": "zh"
+    },
+    "created_at": "2026-04-10T11:00:00Z"
+  },
+  {
+    "id": "u13",
+    "username": "maria",
+    "display_name": "Masha",
+    "avatar_url": "https://example.com/avatars/maria.png",
+    "bio": "Bio for Maria.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "Ukraine"
+      },
+      "language": "uk"
+    },
+    "created_at": "2026-04-15T14:00:00Z"
+  },
+  {
+    "id": "u14",
+    "username": "nick",
+    "display_name": "Nico",
+    "avatar_url": "https://example.com/avatars/nick.png",
+    "bio": "Bio for Nick.",
+    "roles": ["user"],
+    "status": "deleted",
+    "profile": {
+      "location": {
+        "country": "Canada"
+      },
+      "language": "en"
+    },
+    "created_at": "2026-01-20T08:00:00Z"
+  },
+  {
+    "id": "u15",
+    "username": "olga",
+    "display_name": "Olya",
+    "avatar_url": "https://example.com/avatars/olga.png",
+    "bio": "Bio for Olga.",
+    "roles": ["admin"],
+    "status": "pending",
+    "profile": {
+      "location": {
+        "country": "Poland"
+      },
+      "language": "pl"
+    },
+    "created_at": "2026-05-25T10:00:00Z"
+  },
+  {
+    "id": "u16",
+    "username": "peter",
+    "display_name": "Pete",
+    "avatar_url": "https://example.com/avatars/peter.png",
+    "bio": "Bio for Peter.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "Australia"
+      },
+      "language": "en"
+    },
+    "created_at": "2026-05-01T09:00:00Z"
+  },
+  {
+    "id": "u17",
+    "username": "quinn",
+    "display_name": "Q",
+    "avatar_url": "https://example.com/avatars/quinn.png",
+    "bio": "Bio for Quinn.",
+    "roles": ["user"],
+    "status": "active",
+    "profile": {
+      "location": {
+        "country": "New Zealand"
+      },
+      "language": "en"
+    },
+    "created_at": "2026-05-10T14:00:00Z"
+  },
+  {
+    "id": "u18",
+    "username": "rita",
+    "display_name": "Riri",
+    "avatar_url": "https://example.com/avatars/rita.png",
+    "bio": "Bio for Rita.",
+    "roles": ["user"],
+    "status": "suspended",
+    "profile": {
+      "location": {
+        "country": "Portugal"
+      },
+      "language": "pt"
+    },
+    "created_at": "2026-03-12T08:00:00Z"
+  }
+]
