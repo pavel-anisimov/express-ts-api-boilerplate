@@ -120,6 +120,19 @@ export function loadMockItems<T = Record<string, unknown>>(
     return fallbackOrNull(options) ?? [];
 }
 
+export function loadMockRecords(
+    relativeFilePath: string,
+    options: LoadMockDataOptions<Record<string, unknown>[]> = {},
+): Record<string, unknown>[] {
+    return loadMockItems<Record<string, unknown>>(relativeFilePath, options).filter((item): item is Record<string, unknown> => {
+        if (!item || typeof item !== "object" || Array.isArray(item)) {
+            return false;
+        }
+
+        return typeof item.id === "string" && typeof item.email === "string";
+    });
+}
+
 export function loadMockEnvelope<T = Record<string, unknown>>(
     relativeFilePath: string,
     options: LoadMockDataOptions<MockDataEnvelope<T>> = {},

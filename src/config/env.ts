@@ -7,6 +7,15 @@ function arr(v?: string) {
     return (v ?? '').split(',').map(s => s.trim()).filter(Boolean);
 }
 
+function bool(v: string | undefined, fallback: boolean): boolean {
+    const normalized = v?.trim().toLowerCase();
+    if (!normalized) {
+        return fallback;
+    }
+
+    return ['1', 'true', 'yes', 'on'].includes(normalized);
+}
+
 /**
  * Configuration object for environment variables.
  *
@@ -25,4 +34,5 @@ export const env = {
 
     ACCESS_TTL: (process.env.ACCESS_TTL ?? '1h') as MsLike | number,
     REFRESH_TTL: (process.env.REFRESH_TTL ?? '7d') as MsLike | number,
+    MOCK_DATA_ENABLED: bool(process.env.MOCK_DATA_ENABLED ?? process.env.MOCK_DATA, process.env.NODE_ENV === 'test'),
  };

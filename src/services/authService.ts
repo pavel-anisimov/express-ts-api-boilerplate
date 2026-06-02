@@ -1,128 +1,158 @@
-import bcrypt from 'bcryptjs';
-import jwt, { type SignOptions } from 'jsonwebtoken';
-import { v4 as uuid } from 'uuid';
+import bcrypt from "bcryptjs";
+import jwt, { type JwtPayload, type SignOptions } from "jsonwebtoken";
+import { v4 as uuid } from "uuid";
 
-import { userRepo } from '../repositories/inMemory';
-import { env } from '../config/env';
-import { HttpError } from '../utils/httpError';
-import type { Role } from '../types/models';
+import { PythonAuthApiError, remoteLogin, remoteRefresh } from "../clients/pythonAuthClient";
+import { env } from "../config/env";
+import { authMockRepository, type AuthMockSession } from "../repositories/authMockRepository";
+import { findByEmail, getProfileByEmail, getProfileById, updateOwnProfile, type EditableUserProfilePatch, type UserProfileDto } from "../repositories/usersRepo";
+import { HttpError } from "../utils/httpError";
 
-import { eventBus } from './eventBus';
+const { TokenExpiredError } = jwt;
 
-/**
- * Authentication service object providing user management functionalities,
- * including registration, login, and JWT token issuance.
- */
+type Role = string;
+
+type RequesterIdentity = {
+    id?: string;
+    sub?: string;
+    email?: string;
+};
+
+interface JwtClaims extends JwtPayload {
+    sub: string;
+    type?: "access" | "refresh";
+}
+
+export type LoginResponse = {
+    accessToken?: string;
+    access_token?: string;
+    refreshToken?: string;
+    refresh_token?: string;
+    token_type?: string;
+    expires_in?: number;
+    user?: unknown;
+};
+
+function mapPythonError(error: PythonAuthApiError): HttpError {
+    const body = error.body;
+    const message =
+        body && typeof body === "object" && "error" in body && typeof body.error === "string"
+            ? body.error
+            : error.message;
+
+    return new HttpError(error.status, message);
+}
+
 export const authService = {
-    /**
-     * Registers a new user with the provided email, password, and name.
-     * If the user already exists, an error is thrown. The first registered user
-     * is assigned the 'admin' role, while later users are assigned the 'user' role.
-     *
-     * @param {string} email - The email address of the user to register.
-     * @param {string} password - The password for the new user account.
-     * @param {string} name - The name of the user to register.
-     * @return {Promise<Object>} A promise that resolves to an object containing the newly created user and an access token.
-     * @throws {HttpError} If the email is already registered.
-     */
-    async register(email: string, password: string, name: string) {
-        const exist = await userRepo.findByEmail(email);
-        if (exist) {
-            throw new HttpError(409, 'Email already registered', 'EMAIL_EXISTS');
+    async login(email: string, password: string): Promise<LoginResponse> {
+        if (!env.MOCK_DATA_ENABLED) {
+            try {
+                return await remoteLogin(email, password);
+            } catch (error) {
+                if (error instanceof PythonAuthApiError) {
+                    throw mapPythonError(error);
+                }
+
+                throw error;
+            }
         }
 
-        const passwordHash = await bcrypt.hash(password, 10);
+        const user = await findByEmail(email);
 
-        // roles strictly as Role[], without string[]
-        const isFirstUser = (await userRepo.list()).length === 0;
-        const roles: Role[] = isFirstUser ? (['admin'] as Role[]) : (['user'] as Role[]);
+        if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+            throw new HttpError(401, "bad credentials");
+        }
 
-        const user = await userRepo.create({
-            email,
-            passwordHash,
-            name,
-            roles,
-            status: 'active',
-            deleted: false,
-            emailVerified: true,
-        });
+        if (user.deleted || user.status !== "active") {
+            throw new HttpError(403, "user is not active");
+        }
 
-        eventBus.publish('user.registered', { id: user.id, email: user.email });
+        if (!user.emailVerified) {
+            throw new HttpError(403, "email not verified");
+        }
 
-        const token = this.issueToken(user.id, user.email, user.roles, user.name);
+        const accessPayload = { sub: user.id, email: user.email, name: user.name, roles: user.roles };
+        const refreshPayload = { sub: user.id, type: "refresh" };
 
-        return { user: sanitize(user), accessToken: token };
+        const accessOptions: SignOptions = { expiresIn: env.ACCESS_TTL, jwtid: uuid() };
+        const refreshOptions: SignOptions = { expiresIn: env.REFRESH_TTL, jwtid: uuid() };
+
+        const accessToken = jwt.sign(accessPayload, env.JWT_SECRET, accessOptions);
+        const refreshToken = jwt.sign(refreshPayload, env.JWT_SECRET, refreshOptions);
+        const { passwordHash: _hidden, ...safe } = user;
+
+        return { accessToken, refreshToken, user: safe };
     },
 
-    /**
-     * Authenticates a user using their email and password.
-     *
-     * @param {string} email The email of the user attempting to log in.
-     * @param {string} password The password of the user attempting to log in.
-     * @return {Promise<{user: Object, accessToken: string}>} A promise that resolves with the authenticated user's information and an access token.
-     * @throws {HttpError} If the email does not match a registered user.
-     * @throws {HttpError} If the user account is blocked.
-     * @throws {HttpError} If the user's email is not verified.
-     * @throws {HttpError} If the password is invalid.
-     */
-    async login(email: string, password: string) {
-        const user = await userRepo.findByEmail(email);
-        if (!user) {
-            throw new HttpError(401, 'Invalid credentials', 'BAD_CREDENTIALS');
+    async refresh(refreshToken: string): Promise<unknown> {
+        if (!env.MOCK_DATA_ENABLED) {
+            try {
+                return await remoteRefresh(refreshToken);
+            } catch (error) {
+                if (error instanceof PythonAuthApiError) {
+                    throw mapPythonError(error);
+                }
+
+                throw error;
+            }
         }
 
-        if (user.deleted || user.status === 'deleted') {
-            throw new HttpError(403, 'User is deleted', 'USER_DELETED');
+        try {
+            const decoded = jwt.verify(refreshToken, env.JWT_SECRET) as JwtClaims;
+
+            if (decoded?.type !== "refresh") {
+                throw new HttpError(401, "invalid refresh token");
+            }
+
+            const payload = { sub: decoded.sub };
+            const accessOptions: SignOptions = { expiresIn: env.ACCESS_TTL, jwtid: uuid() };
+            return { accessToken: jwt.sign(payload, env.JWT_SECRET, accessOptions) };
+        } catch (error) {
+            if (error instanceof HttpError) {
+                throw error;
+            }
+
+            if (error instanceof TokenExpiredError) {
+                throw new HttpError(401, "refresh token expired");
+            }
+
+            throw error;
         }
-
-        if (user.status === 'blocked') {
-            throw new HttpError(403, 'User is blocked', 'USER_BLOCKED');
-        }
-
-        if (!user.emailVerified || user.status === 'pending_verification') {
-            throw new HttpError(403, 'Email not verified', 'EMAIL_NOT_VERIFIED');
-        }
-
-        const ok = await bcrypt.compare(password, user.passwordHash);
-
-        if (!ok) {
-            throw new HttpError(401, 'Invalid credentials', 'BAD_CREDENTIALS');
-        }
-
-        eventBus.publish('user.logged_in', { id: user.id, email: user.email });
-
-        const token = this.issueToken(user.id, user.email, user.roles, user.name);
-
-        return { user: sanitize(user), accessToken: token };
     },
 
-    /**
-     * Issues a JWT (JSON Web Token) using the provided user details and options.
-     *
-     * @param {string} sub - The unique identifier for the subject (user).
-     * @param {string} email - The email address of the subject.
-     * @param {Role[]} roles - An array of roles assigned to the subject.
-     * @param {string} [name] - The optional name of the subject.
-     * @return {string} A signed JWT containing the provided payload and options.
-     */
+    logout(): null {
+        return null;
+    },
+
+    async me(requester: RequesterIdentity): Promise<UserProfileDto> {
+        const profile =
+            (requester.id || requester.sub ? await getProfileById(requester.id ?? requester.sub ?? "") : null) ??
+            (requester.email ? await getProfileByEmail(requester.email) : null);
+
+        if (!profile) {
+            throw new HttpError(404, "profile not found");
+        }
+
+        return profile;
+    },
+
+    async updateMyProfile(requester: RequesterIdentity, patch: EditableUserProfilePatch): Promise<UserProfileDto> {
+        const profile = await updateOwnProfile(requester, patch);
+        if (!profile) {
+            throw new HttpError(404, "profile not found");
+        }
+
+        return profile;
+    },
+
+    getSession(accessToken: string): AuthMockSession | null {
+        return authMockRepository.getSession(accessToken);
+    },
+
     issueToken(sub: string, email: string, roles: Role[], name?: string): string {
-        // payload as an object - to avoid overloading with callback/none
         const payload = { sub, email, roles, name };
         const options: SignOptions = { expiresIn: env.JWT_EXPIRES_IN, jwtid: uuid() };
 
         return jwt.sign(payload, env.JWT_SECRET, options);
     },
 };
-
-/**
- * Removes the `passwordHash` property from the given user object, returning a sanitized version of the object.
- *
- * @param {T} user - The user objects to be sanitized. This object may contain a `passwordHash` property.
- * @return {Omit<T, 'passwordHash'>} A new user object without the `passwordHash` property.
- */
-function sanitize<T extends { passwordHash?: string }>(user: T): Omit<T, 'passwordHash'> {
-    // remove passwordHash from the response
-    const {  passwordHash: _passwordHash, ...rest } = user;
-
-    return rest;
-}

@@ -2,6 +2,9 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 
+import { PythonAuthApiError, remoteGetMe } from "../clients/pythonAuthClient";
+import { env } from "../config/env";
+
 const { TokenExpiredError } = jwt;
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_super_secret_change_me";
@@ -22,11 +25,36 @@ type AuthedRequest = Request & {
         roles: string[] };
 };
 
-export function requireAuth(request: Request, response: Response, next: NextFunction) {
+export async function requireAuth(request: Request, response: Response, next: NextFunction) {
     const headers = request.headers.authorization ?? "";
     const token = headers.startsWith("Bearer ") ? headers.slice(7) : "";
     if (!token) {
         return response.status(401).json({ error: "missing token" });
+    }
+
+    if (!env.MOCK_DATA_ENABLED) {
+        try {
+            const user = await remoteGetMe(token);
+            (request as AuthedRequest).user = {
+                id: user.id,
+                email: user.email,
+                name: user.name ?? user.display_name ?? "",
+                roles: user.roles,
+            };
+            (request as AuthedRequest).auth = {
+                sub: user.id,
+                email: user.email,
+                name: user.name ?? user.display_name ?? "",
+                roles: user.roles,
+            };
+            return next();
+        } catch (error) {
+            if (error instanceof PythonAuthApiError) {
+                return response.status(error.status).json(error.body ?? { error: error.message });
+            }
+
+            return next(error);
+        }
     }
 
     try {

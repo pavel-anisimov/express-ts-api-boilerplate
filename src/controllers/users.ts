@@ -1,7 +1,8 @@
 // src/controllers/users.ts
 import type { Request, Response, NextFunction } from "express";
 
-import { getAllUsers, getProfileByEmail, getProfileById, updateUserDeleted, updateUserSuspended, type UserSafe } from "../repositories/usersRepo";
+import { userService } from "../services/userService";
+import { HttpError } from "../utils/httpError";
 
 type RequestWithAuth = Request & {
     auth?: {
@@ -21,31 +22,12 @@ function getRequester(request: Request): RequestWithAuth["user"] | RequestWithAu
     return authReq.user ?? authReq.auth ?? null;
 }
 
-function getRequesterId(requester: NonNullable<ReturnType<typeof getRequester>>): string {
-    return "id" in requester ? requester.id : requester.sub;
-}
-
-async function canRequesterDelete(requester: NonNullable<ReturnType<typeof getRequester>>, targetId: string): Promise<boolean> {
-    const requesterId = getRequesterId(requester);
-    const requesterProfile =
-        (await getProfileById(requesterId)) ??
-        (requester.email ? await getProfileByEmail(requester.email) : null);
-
-    return (requester.roles ?? []).includes("admin") || requesterProfile?.id === targetId || requesterId === targetId;
-}
-
-function canRequesterSuspend(requester: NonNullable<ReturnType<typeof getRequester>>): boolean {
-    const roles = requester.roles ?? [];
-    return roles.includes("admin") || roles.includes("manager");
-}
-
-function isDeletedUserProfile(profile: unknown): boolean {
-    if (!profile || typeof profile !== "object") {
-        return false;
+function handleServiceError(error: unknown, response: Response, next: NextFunction) {
+    if (error instanceof HttpError) {
+        return response.status(error.status).json({ error: error.message });
     }
 
-    const candidate = profile as { deleted?: unknown; status?: unknown };
-    return candidate.deleted === true || candidate.status === "deleted";
+    return next(error);
 }
 
 /**
@@ -59,36 +41,9 @@ export async function listUsers(
     next: NextFunction
 ) {
     try {
-        // secure parsing of query parameters
-        const pageRaw = request.query.page ?? 1;
-        const limitRaw = request.query.limit ?? 20;
-        const page = Math.max(1, Number(pageRaw) || 1);
-        const limit = Math.max(1, Number(limitRaw) || 20);
-
-        const searchRaw = (request.query.query ?? request.query.q ?? "").toString().trim().toLowerCase();
-
-        let items: UserSafe[] = await getAllUsers();
-
-        if (searchRaw) {
-            items = items.filter((user) =>
-                user.email.toLowerCase().includes(searchRaw) ||
-                (user.name ?? "").toLowerCase().includes(searchRaw) ||
-                (user.username ?? "").toLowerCase().includes(searchRaw) ||
-                (user.display_name ?? "").toLowerCase().includes(searchRaw) ||
-                (user.first_name ?? "").toLowerCase().includes(searchRaw) ||
-                (user.last_name ?? "").toLowerCase().includes(searchRaw) ||
-                (user.status ?? "").toLowerCase().includes(searchRaw) ||
-                (user.roles ?? []).some((role) => role.toLowerCase().includes(searchRaw))
-            );
-        }
-
-        const total = items.length;
-        const start = (page - 1) * limit;
-        const paged = items.slice(start, start + limit);
-
-        return response.json({ items: paged, total, page, limit });
+        return response.json(await userService.listUsers(request.query));
     } catch (error) {
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }
 
@@ -123,26 +78,9 @@ export async function getUserProfile(
             return response.status(401).json({ error: "unauthorized" });
         }
 
-        const target = await getProfileById(request.params.id);
-        if (!target) {
-            return response.status(404).json({ error: "profile not found" });
-        }
-
-        const requesterId = getRequesterId(requester);
-        const requesterProfile =
-            (await getProfileById(requesterId)) ??
-            (requester.email ? await getProfileByEmail(requester.email) : null);
-        const requesterRoles = requester.roles ?? [];
-        const isAdmin = requesterRoles.includes("admin");
-        const isOwner = requesterProfile?.id === target.id || requesterId === target.id;
-
-        if (!isAdmin && !isOwner) {
-            return response.status(403).json({ error: "forbidden" });
-        }
-
-        return response.json(target);
+        return response.json(await userService.getUserProfile(requester, request.params.id));
     } catch (error) {
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }
 
@@ -161,19 +99,9 @@ export async function setUserDeleted(
             return response.status(401).json({ error: "unauthorized" });
         }
 
-        const target = await getProfileById(request.params.id);
-        if (!target) {
-            return response.status(404).json({ error: "profile not found" });
-        }
-
-        if (!(await canRequesterDelete(requester, target.id))) {
-            return response.status(403).json({ error: "forbidden" });
-        }
-
-        const updated = await updateUserDeleted(target.id, request.body.deleted);
-        return response.json(updated);
+        return response.json(await userService.setUserDeleted(requester, request.params.id, request.body.deleted));
     } catch (error) {
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }
 
@@ -192,23 +120,9 @@ export async function setUserSuspended(
             return response.status(401).json({ error: "unauthorized" });
         }
 
-        const target = await getProfileById(request.params.id);
-        if (!target) {
-            return response.status(404).json({ error: "profile not found" });
-        }
-
-        if (!canRequesterSuspend(requester)) {
-            return response.status(403).json({ error: "forbidden" });
-        }
-
-        if (isDeletedUserProfile(target)) {
-            return response.status(400).json({ error: "deleted user cannot be suspended" });
-        }
-
-        const updated = await updateUserSuspended(target.id, request.body.suspended);
-        return response.json(updated);
+        return response.json(await userService.setUserSuspended(requester, request.params.id, request.body.suspended));
     } catch (error) {
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }
 
@@ -253,18 +167,8 @@ export async function deleteUser(
             return response.status(401).json({ error: "unauthorized" });
         }
 
-        const target = await getProfileById(request.params.id);
-        if (!target) {
-            return response.status(404).json({ error: "profile not found" });
-        }
-
-        if (!(await canRequesterDelete(requester, target.id))) {
-            return response.status(403).json({ error: "forbidden" });
-        }
-
-        const updated = await updateUserDeleted(target.id, true);
-        return response.json(updated);
+        return response.json(await userService.deleteUser(requester, request.params.id));
     } catch (error) {
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }

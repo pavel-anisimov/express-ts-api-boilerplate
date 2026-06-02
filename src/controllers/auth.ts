@@ -1,13 +1,9 @@
 // src/controllers/auth.ts
 import type { Request, Response, NextFunction } from "express";
-import bcrypt from "bcryptjs";
-import jwt, { type SignOptions, type JwtPayload } from "jsonwebtoken";
-import { v4 as uuid } from "uuid";
+import type { JwtPayload } from "jsonwebtoken";
 
-import { findByEmail, getProfileByEmail, getProfileById, updateOwnProfile } from "../repositories/usersRepo";
-import { env } from "../config/env";
-
-const { TokenExpiredError } = jwt;
+import { authService } from "../services/authService";
+import { HttpError } from "../utils/httpError";
 
 type Role = string;
 interface JwtClaims extends JwtPayload {
@@ -58,6 +54,14 @@ function requesterFrom(request: Request): RequesterIdentity | null {
     return requester;
 }
 
+function handleServiceError(error: unknown, response: Response, next: NextFunction) {
+    if (error instanceof HttpError) {
+        return response.status(error.status).json({ error: error.message });
+    }
+
+    return next(error);
+}
+
 export async function login(request: Request, response: Response, next: NextFunction) {
     try {
         const { email, password } = request.body ?? {};
@@ -65,34 +69,9 @@ export async function login(request: Request, response: Response, next: NextFunc
             return response.status(400).json({ error: "email and password are required" });
         }
 
-        const user = await findByEmail(String(email));
-
-        if (!user || !(await bcrypt.compare(String(password), user.passwordHash))) {
-            return response.status(401).json({ error: "bad credentials" });
-        }
-
-        if (user.deleted || user.status !== "active") {
-            return response.status(403).json({ error: "user is not active" });
-        }
-
-        if (!user.emailVerified) {
-            return response.status(403).json({ error: "email not verified" });
-        }
-
-        const accessPayload = { sub: user.id, email: user.email, name: user.name, roles: user.roles };
-        const refreshPayload = { sub: user.id, type: "refresh" };
-
-        const accessOptions: SignOptions = { expiresIn: env.ACCESS_TTL, jwtid: uuid() };
-        const refreshOptions: SignOptions = { expiresIn: env.REFRESH_TTL, jwtid: uuid() };
-
-        const accessToken = jwt.sign(accessPayload, env.JWT_SECRET, accessOptions);
-        const refreshToken = jwt.sign(refreshPayload, env.JWT_SECRET, refreshOptions);
-
-        const { passwordHash: _hidden, ...safe } = user;
-
-        return response.json({ accessToken, refreshToken, user: safe });
+        return response.json(await authService.login(String(email), String(password)));
     } catch (error) {
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }
 
@@ -103,26 +82,14 @@ export async function refresh(request: Request, response: Response, next: NextFu
             return response.status(400).json({ error: "missing refreshToken" });
         }
 
-        const decoded = jwt.verify(String(refreshToken), env.JWT_SECRET) as JwtClaims;
-
-        if (decoded?.type !== "refresh") {
-            return response.status(401).json({ error: "invalid refresh token" });
-        }
-
-        const payload = { sub: decoded.sub };
-        const accessOptions: SignOptions = { expiresIn: env.ACCESS_TTL, jwtid: uuid() };
-        const newAccessToken = jwt.sign(payload, env.JWT_SECRET, accessOptions);
-
-        return response.json({ accessToken: newAccessToken });
+        return response.json(await authService.refresh(String(refreshToken)));
     } catch (error) {
-        if (error instanceof TokenExpiredError) {
-            return response.status(401).json({ error: "refresh token expired" });
-        }
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }
 
 export async function logout(_request: Request, response: Response) {
+    authService.logout();
     return response.status(204).end();
 }
 
@@ -134,17 +101,9 @@ export async function me(request: Request, response: Response, next: NextFunctio
             return response.status(401).json({ error: "unauthorized" });
         }
 
-        const profile =
-            (requester.id || requester.sub ? await getProfileById(requester.id ?? requester.sub ?? "") : null) ??
-            (requester.email ? await getProfileByEmail(requester.email) : null);
-
-        if (!profile) {
-            return response.status(404).json({ error: "profile not found" });
-        }
-
-        return response.json(profile);
+        return response.json(await authService.me(requester));
     } catch (error) {
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }
 
@@ -156,13 +115,8 @@ export async function updateMyProfile(request: Request, response: Response, next
             return response.status(401).json({ error: "unauthorized" });
         }
 
-        const profile = await updateOwnProfile(requester, request.body);
-        if (!profile) {
-            return response.status(404).json({ error: "profile not found" });
-        }
-
-        return response.json(profile);
+        return response.json(await authService.updateMyProfile(requester, request.body));
     } catch (error) {
-        return next(error);
+        return handleServiceError(error, response, next);
     }
 }
