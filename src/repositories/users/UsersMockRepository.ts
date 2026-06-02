@@ -1,8 +1,14 @@
-import type { UserProfile } from "../types/models";
-import { loadMockRecords } from "../utils/mockDataLoader";
+import type { UserProfile } from "../../types/models";
+import { loadMockRecords } from "../../utils/mockDataLoader";
+import type { AuthRepository } from "../auth/AuthRepository";
 
-import { authMockRepository, type AuthMockRepository } from "./authMockRepository";
-import type { EditableUserProfilePatch, UserProfileDto, UserSafe } from "./usersRepo";
+import type {
+    EditableUserProfilePatch,
+    UserProfileDto,
+    UserSafe,
+    UsersRepository,
+    UsersRepositoryRequester,
+} from "./UsersRepository";
 
 type MockUserProfile = Omit<UserProfile, "status" | "deleted" | "deleted_at"> & {
     status: string;
@@ -209,12 +215,12 @@ function applyEditableProfilePatch(profile: Record<string, unknown>, patch: Edit
     }
 }
 
-export class UsersMockRepository {
-    private readonly listRows = loadMockRecords("auth/user-list-items.json");
-    private readonly profileRows = loadMockRecords("auth/user-profiles.json");
-    private readonly adminRows = loadMockRecords("auth/admin-details.json");
+export class UsersMockRepository implements UsersRepository {
+    private readonly listRows = loadMockRecords("users/user-list-items.json");
+    private readonly profileRows = loadMockRecords("users/user-profiles.json");
+    private readonly adminRows = loadMockRecords("users/admin-details.json");
 
-    constructor(private readonly authRepository: AuthMockRepository) {}
+    constructor(private readonly authRepository: AuthRepository) {}
 
     listUsers(): UserSafe[] {
         return this.listRows.map(normalizeListUser);
@@ -239,7 +245,7 @@ export class UsersMockRepository {
         return this.adminRows.find((user) => user.id === id) ?? null;
     }
 
-    updateOwnProfile(requester: { id?: string; sub?: string; email?: string }, patch: EditableUserProfilePatch): UserProfileDto | null {
+    updateOwnProfile(requester: UsersRepositoryRequester, patch: EditableUserProfilePatch): UserProfileDto | null {
         const row =
             (requester.id || requester.sub ? this.findProfileRowById(requester.id ?? requester.sub ?? "") : null) ??
             (requester.email ? this.findProfileRowByEmail(requester.email) : null);
@@ -319,5 +325,3 @@ export class UsersMockRepository {
         this.authRepository.updateAuthUserState(identity, patch);
     }
 }
-
-export const usersMockRepository = new UsersMockRepository(authMockRepository);

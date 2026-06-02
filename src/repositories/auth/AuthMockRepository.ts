@@ -1,27 +1,17 @@
 import { randomUUID } from "node:crypto";
 
-import type { Role } from "../types/models";
-import { loadMockItems, loadMockRecords } from "../utils/mockDataLoader";
+import type { Role } from "../../types/models";
+import { loadMockItems, loadMockRecords } from "../../utils/mockDataLoader";
+
+import type {
+    AuthRepository,
+    AuthRepositoryIdentity,
+    AuthRepositorySession,
+    AuthRepositoryUser,
+    AuthUserStatePatch,
+} from "./AuthRepository";
 
 type MockUserStatus = "active" | "blocked" | "pending" | "pending_verification" | "suspended" | "deleted";
-
-export type AuthMockUser = {
-    id: string;
-    email: string;
-    passwordHash: string;
-    name?: string;
-    roles: string[];
-    status: string;
-    deleted: boolean;
-    emailVerified: boolean;
-};
-
-export type AuthMockSession = {
-    access_token: string;
-    token_type?: string;
-    expires_in?: number;
-    user?: Record<string, unknown>;
-};
 
 type RawAuthUser = {
     id?: unknown;
@@ -53,7 +43,7 @@ function isUserStatus(status: unknown): status is MockUserStatus {
     );
 }
 
-function toAuthUser(user: Record<string, unknown>): AuthMockUser {
+function toAuthUser(user: Record<string, unknown>): AuthRepositoryUser {
     const rawUser = user as RawAuthUser;
     const id =
         typeof rawUser.id === "string"
@@ -66,7 +56,7 @@ function toAuthUser(user: Record<string, unknown>): AuthMockUser {
         ? (rawUser.roles as unknown[]).filter(isRole)
         : [];
 
-    const status: AuthMockUser["status"] = isUserStatus(rawUser.status) ? rawUser.status : "active";
+    const status: AuthRepositoryUser["status"] = isUserStatus(rawUser.status) ? rawUser.status : "active";
     const deleted = typeof rawUser.deleted === "boolean" ? rawUser.deleted : status === "deleted";
     const emailVerified =
         typeof rawUser.emailVerified === "boolean"
@@ -91,12 +81,12 @@ function toAuthUser(user: Record<string, unknown>): AuthMockUser {
     };
 }
 
-function toSession(value: Record<string, unknown>): AuthMockSession | null {
+function toSession(value: Record<string, unknown>): AuthRepositorySession | null {
     if (typeof value.access_token !== "string") {
         return null;
     }
 
-    const session: AuthMockSession = {
+    const session: AuthRepositorySession = {
         access_token: value.access_token,
     };
 
@@ -115,12 +105,12 @@ function toSession(value: Record<string, unknown>): AuthMockSession | null {
     return session;
 }
 
-export class AuthMockRepository {
+export class AuthMockRepository implements AuthRepository {
     private readonly authRows = loadMockRecords("auth/auth-users.json");
     private readonly meRows = loadMockRecords("auth/auth-me.json");
     private readonly sessionRows = loadMockItems<Record<string, unknown>>("auth/auth-sessions.json");
 
-    getMe(identity: { id?: string; sub?: string; email?: string; accessToken?: string }): Record<string, unknown> | null {
+    getMe(identity: AuthRepositoryIdentity): Record<string, unknown> | null {
         if (identity.accessToken) {
             return this.getSession(identity.accessToken)?.user ?? null;
         }
@@ -137,22 +127,22 @@ export class AuthMockRepository {
         return null;
     }
 
-    getSession(accessToken: string): AuthMockSession | null {
+    getSession(accessToken: string): AuthRepositorySession | null {
         const row = this.sessionRows.find((session) => session.access_token === accessToken);
         return row ? toSession(row) : null;
     }
 
-    findAuthUserByEmail(email: string): AuthMockUser | null {
+    findAuthUserByEmail(email: string): AuthRepositoryUser | null {
         const row = this.authRows.find((user) => typeof user.email === "string" && user.email.toLowerCase() === email.toLowerCase());
         return row ? toAuthUser(row) : null;
     }
 
-    findAuthUserById(id: string): AuthMockUser | null {
+    findAuthUserById(id: string): AuthRepositoryUser | null {
         const row = this.authRows.find((user) => user.id === id);
         return row ? toAuthUser(row) : null;
     }
 
-    updateAuthUserState(identity: { id?: string; email?: string }, patch: { deleted?: boolean; status?: string }): void {
+    updateAuthUserState(identity: Pick<AuthRepositoryIdentity, "id" | "email">, patch: AuthUserStatePatch): void {
         const row =
             (identity.id ? this.authRows.find((user) => user.id === identity.id) : null) ??
             (identity.email ? this.authRows.find((user) => typeof user.email === "string" && user.email.toLowerCase() === identity.email?.toLowerCase()) : null);
@@ -170,5 +160,3 @@ export class AuthMockRepository {
         }
     }
 }
-
-export const authMockRepository = new AuthMockRepository();

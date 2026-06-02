@@ -10,91 +10,42 @@ import {
     remoteUpdateUserSuspended,
 } from "../clients/pythonAuthClient";
 import { env } from "../config/env";
-import type { UserProfile } from "../types/models";
 
-import { authMockRepository, type AuthMockUser } from "./authMockRepository";
-import { usersMockRepository } from "./usersMockRepository";
+import type { AuthRepositoryUser } from "./auth/AuthRepository";
+import type { EditableUserProfilePatch, UserProfileDto, UserSafe } from "./users/UsersRepository";
 
-export type UserSafe = {
-    id: string;
-    email: string;
-    name?: string;
-    username?: string | null;
-    display_name?: string | null;
-    first_name?: string | null;
-    last_name?: string | null;
-    roles: string[];
-    status: string;
-    deleted: boolean;
-    emailVerified?: boolean;
-    email_verified?: boolean;
-    tenant_id?: string | null;
-    created_at?: string | null;
-    last_login_at?: string | null;
-};
+import { repositories } from ".";
 
-export type UserProfileDto = Omit<UserProfile, "status" | "deleted" | "deleted_at"> & {
-    status: string;
-    deleted: boolean;
-    deleted_at: string | null;
-};
-
-export type EditableUserProfilePatch = {
-    display_name?: string | null;
-    first_name?: string | null;
-    last_name?: string | null;
-    profile?: {
-        gender?: string | null;
-        date_of_birth?: string | null;
-        bio?: string | null;
-        language?: string | null;
-        timezone?: string | null;
-        avatar_url?: string | null;
-        phone_number?: string | null;
-        location?: {
-            city?: string | null;
-            state?: string | null;
-            country?: string | null;
-            zip?: string | null;
-        };
-        social?: Record<string, unknown>;
-    };
-    preferences?: {
-        theme?: string;
-        notifications?: {
-            email?: boolean;
-            sms?: boolean;
-            marketing?: boolean;
-        };
-        privacy?: {
-            email?: string;
-        };
-    };
-};
+export type { EditableUserProfilePatch, UserProfileDto, UserSafe } from "./users/UsersRepository";
 
 /** For /api/users - a safe list without passwords */
 export async function getAllUsers(): Promise<UserSafe[]> {
-    return env.MOCK_DATA_ENABLED ? usersMockRepository.listUsers() : remoteGetAllUsers();
+    return env.MOCK_DATA_ENABLED ? repositories.users.listUsers() : remoteGetAllUsers();
 }
 
 /** For /api/auth/login - search with password hash */
-export async function findByEmail(email: string): Promise<AuthMockUser | null> {
-    return env.MOCK_DATA_ENABLED ? authMockRepository.findAuthUserByEmail(email) : remoteFindByEmail(email);
+export async function findByEmail(email: string): Promise<AuthRepositoryUser | null> {
+    return env.MOCK_DATA_ENABLED ? repositories.auth.findAuthUserByEmail(email) : remoteFindByEmail(email);
 }
 
 /** (optional) get safe user by id */
 export async function getById(id: string): Promise<UserSafe | null> {
-    return env.MOCK_DATA_ENABLED ? usersMockRepository.getUserById(id) : remoteGetById(id);
+    return env.MOCK_DATA_ENABLED ? repositories.users.getUserById(id) : remoteGetById(id);
 }
 
 /** Full profile for frontend profile pages */
 export async function getProfileById(id: string): Promise<UserProfileDto | null> {
-    return env.MOCK_DATA_ENABLED ? usersMockRepository.getUserProfileById(id) : remoteGetProfileById(id);
+    return env.MOCK_DATA_ENABLED ? repositories.users.getUserProfileById(id) : remoteGetProfileById(id);
 }
 
 /** Full profile lookup for resolving requester identity from token email */
 export async function getProfileByEmail(email: string): Promise<UserProfileDto | null> {
-    return env.MOCK_DATA_ENABLED ? usersMockRepository.getUserProfileByEmail(email) : remoteGetProfileByEmail(email);
+    return env.MOCK_DATA_ENABLED ? repositories.users.getUserProfileByEmail(email) : remoteGetProfileByEmail(email);
+}
+
+/** Admin-only detail metadata for frontend management views */
+export async function getAdminDetailsById(id: string): Promise<Record<string, unknown> | null> {
+    return env.MOCK_DATA_ENABLED ? repositories.users.getAdminDetailsById(id) : null;
 }
 
 /** Update editable profile fields for the authenticated requester in the mock profile store */
@@ -102,15 +53,15 @@ export async function updateOwnProfile(
     requester: { id?: string; sub?: string; email?: string },
     patch: EditableUserProfilePatch,
 ): Promise<UserProfileDto | null> {
-    return env.MOCK_DATA_ENABLED ? usersMockRepository.updateOwnProfile(requester, patch) : remoteUpdateOwnProfile(requester, patch);
+    return env.MOCK_DATA_ENABLED ? repositories.users.updateOwnProfile(requester, patch) : remoteUpdateOwnProfile(requester, patch);
 }
 
 /** Soft-delete or restore a mock user profile and matching auth record */
 export async function updateUserDeleted(id: string, deleted: boolean): Promise<UserProfileDto | null> {
-    return env.MOCK_DATA_ENABLED ? usersMockRepository.updateUserDeleted(id, deleted) : remoteUpdateUserDeleted(id, deleted);
+    return env.MOCK_DATA_ENABLED ? repositories.users.updateUserDeleted(id, deleted) : remoteUpdateUserDeleted(id, deleted);
 }
 
 /** Suspend or unsuspend a mock user profile and matching auth record */
 export async function updateUserSuspended(id: string, suspended: boolean): Promise<UserProfileDto | null> {
-    return env.MOCK_DATA_ENABLED ? usersMockRepository.updateUserSuspended(id, suspended) : remoteUpdateUserSuspended(id, suspended);
+    return env.MOCK_DATA_ENABLED ? repositories.users.updateUserSuspended(id, suspended) : remoteUpdateUserSuspended(id, suspended);
 }

@@ -1,4 +1,5 @@
 import {
+    getAdminDetailsById,
     getAllUsers,
     getProfileByEmail,
     getProfileById,
@@ -7,7 +8,6 @@ import {
     type UserProfileDto,
     type UserSafe,
 } from "../repositories/usersRepo";
-import { usersMockRepository } from "../repositories/usersMockRepository";
 import { HttpError } from "../utils/httpError";
 
 export type Requester = {
@@ -106,8 +106,8 @@ export const userService = {
         return target;
     },
 
-    getAdminDetailsById(id: string): Record<string, unknown> | null {
-        return usersMockRepository.getAdminDetailsById(id);
+    async getAdminDetailsById(id: string): Promise<Record<string, unknown> | null> {
+        return getAdminDetailsById(id);
     },
 
     async setUserDeleted(requester: Requester, targetId: string, deleted: boolean): Promise<UserProfileDto | null> {

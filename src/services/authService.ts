@@ -4,7 +4,8 @@ import { v4 as uuid } from "uuid";
 
 import { PythonAuthApiError, remoteLogin, remoteRefresh } from "../clients/pythonAuthClient";
 import { env } from "../config/env";
-import { authMockRepository, type AuthMockSession } from "../repositories/authMockRepository";
+import { repositories } from "../repositories";
+import type { AuthRepositorySession } from "../repositories/auth/AuthRepository";
 import { findByEmail, getProfileByEmail, getProfileById, updateOwnProfile, type EditableUserProfilePatch, type UserProfileDto } from "../repositories/usersRepo";
 import { HttpError } from "../utils/httpError";
 
@@ -145,8 +146,8 @@ export const authService = {
         return profile;
     },
 
-    getSession(accessToken: string): AuthMockSession | null {
-        return authMockRepository.getSession(accessToken);
+    getSession(accessToken: string): AuthRepositorySession | null {
+        return repositories.auth.getSession(accessToken);
     },
 
     issueToken(sub: string, email: string, roles: Role[], name?: string): string {
