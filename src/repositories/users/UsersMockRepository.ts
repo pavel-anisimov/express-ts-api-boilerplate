@@ -275,7 +275,7 @@ function applyEditableProfilePatch(profile: Record<string, unknown>, patch: Edit
 export class UsersMockRepository implements UsersRepository {
     private readonly listRows = loadMockRecords("users/user-list-items.json");
     private readonly profileRows = loadMockRecords("users/user-profiles.json");
-    private readonly adminRows = loadMockRecords("users/admin-details.json");
+    private readonly adminRows = loadMockRecords("users/admin-user-details.json");
 
     constructor(private readonly authRepository: AuthRepository) {}
 
