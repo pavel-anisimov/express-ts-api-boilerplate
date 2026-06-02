@@ -1,4 +1,3 @@
-// src/middlewares/auth.ts
 import type { Request, Response, NextFunction } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 
@@ -9,6 +8,9 @@ const { TokenExpiredError } = jwt;
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_super_secret_change_me";
 
+/**
+ * JWT payload fields required by downstream controllers and RBAC middleware.
+ */
 type JwtClaims = JwtPayload & {
     sub: string;
     email?: string;
@@ -16,15 +18,30 @@ type JwtClaims = JwtPayload & {
     roles?: string[];
 };
 
+/**
+ * Request shape after a caller has been authenticated.
+ *
+ * `auth` keeps JWT-style claims; `user` is the normalized identity shape used
+ * by controllers and permission middleware. Both are populated to keep older
+ * and newer gateway code paths compatible.
+ */
 type AuthedRequest = Request & {
     auth?: JwtClaims;
     user?: {
         id: string;
         email?: string;
         name?: string;
-        roles: string[] };
+        roles: string[];
+    };
 };
 
+/**
+ * Requires a valid bearer token and attaches requester identity to Express.
+ *
+ * In mock mode the gateway verifies local JWTs. In non-mock mode it delegates
+ * token validation and user lookup to the Python auth API via `/me`, then maps
+ * that response into the same `request.auth` and `request.user` shapes.
+ */
 export async function requireAuth(request: Request, response: Response, next: NextFunction) {
     const headers = request.headers.authorization ?? "";
     const token = headers.startsWith("Bearer ") ? headers.slice(7) : "";

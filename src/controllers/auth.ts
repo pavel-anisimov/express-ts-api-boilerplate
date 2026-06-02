@@ -1,4 +1,3 @@
-// src/controllers/auth.ts
 import type { Request, Response, NextFunction } from "express";
 import type { JwtPayload } from "jsonwebtoken";
 
@@ -6,14 +5,29 @@ import { authService } from "../services/authService";
 import { HttpError } from "../utils/httpError";
 
 type Role = string;
+
+/**
+ * JWT claims accepted by auth controllers.
+ *
+ * The gateway may receive identity from different auth middleware layers while
+ * local mock auth and the downstream Python auth API evolve. This type captures
+ * only the fields required to build a service-facing requester identity.
+ */
 interface JwtClaims extends JwtPayload {
-    sub: string;                 // user id
+    sub: string;
     email?: string;
     name?: string;
     roles?: Role[];
     type?: "access" | "refresh";
 }
-// What do auth middlewares put in request
+
+/**
+ * Request shape after authentication middleware has attached identity.
+ *
+ * Some middleware writes normalized user data to `request.user`; JWT-oriented
+ * middleware may write raw claims to `request.auth`. Controllers accept both
+ * forms and normalize them before calling AuthService.
+ */
 type RequestWithAuth = Request & {
     user?: {
         id: string;
@@ -30,6 +44,12 @@ type RequesterIdentity = {
     email?: string;
 };
 
+/**
+ * Extracts the minimal identity needed by AuthService.
+ *
+ * Controllers only reject missing identity here. Authorization and profile
+ * lookup rules remain in the service/repository layer.
+ */
 function requesterFrom(request: Request): RequesterIdentity | null {
     const authReq = request as RequestWithAuth;
     const fromReq = authReq.user ?? authReq.auth;
@@ -54,6 +74,9 @@ function requesterFrom(request: Request): RequesterIdentity | null {
     return requester;
 }
 
+/**
+ * Converts expected service failures into HTTP responses.
+ */
 function handleServiceError(error: unknown, response: Response, next: NextFunction) {
     if (error instanceof HttpError) {
         return response.status(error.status).json({ error: error.message });
@@ -62,6 +85,12 @@ function handleServiceError(error: unknown, response: Response, next: NextFuncti
     return next(error);
 }
 
+/**
+ * POST /api/auth/login
+ *
+ * Validates the minimal request shape and delegates credential checking plus
+ * token/session generation to AuthService.
+ */
 export async function login(request: Request, response: Response, next: NextFunction) {
     try {
         const { email, password } = request.body ?? {};
@@ -75,6 +104,12 @@ export async function login(request: Request, response: Response, next: NextFunc
     }
 }
 
+/**
+ * POST /api/auth/refresh
+ *
+ * Accepts a refresh token and returns the refreshed auth payload produced by
+ * AuthService. Token semantics intentionally stay outside the controller.
+ */
 export async function refresh(request: Request, response: Response, next: NextFunction) {
     try {
         const { refreshToken } = request.body ?? {};
@@ -88,12 +123,22 @@ export async function refresh(request: Request, response: Response, next: NextFu
     }
 }
 
+/**
+ * POST /api/auth/logout
+ *
+ * Keeps the current no-content response contract while delegating session
+ * invalidation behavior to AuthService.
+ */
 export async function logout(_request: Request, response: Response) {
     authService.logout();
     return response.status(204).end();
 }
 
-/** GET /api/auth/me - return the current user from req.user/req.auth */
+/**
+ * GET /api/auth/me
+ *
+ * Returns the current frontend-facing profile for the authenticated requester.
+ */
 export async function me(request: Request, response: Response, next: NextFunction) {
     try {
         const requester = requesterFrom(request);
@@ -107,7 +152,12 @@ export async function me(request: Request, response: Response, next: NextFunctio
     }
 }
 
-/** PATCH /api/auth/me/profile - update editable fields on the authenticated user's own profile */
+/**
+ * PATCH /api/auth/me/profile
+ *
+ * Applies editable profile fields for the authenticated user. Field-level
+ * validation and persistence rules are handled by AuthService/repositories.
+ */
 export async function updateMyProfile(request: Request, response: Response, next: NextFunction) {
     try {
         const requester = requesterFrom(request);

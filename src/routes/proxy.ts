@@ -5,9 +5,17 @@ import { requirePermission } from '../middlewares/permissions';
 import { proxyTo } from '../utils/proxy';
 import { services } from '../config/services';
 
+/**
+ * Downstream proxy route group.
+ *
+ * Proxy routes are protected at the gateway boundary, then forwarded to the
+ * configured logical downstream service with a route-specific path rewrite.
+ */
 export const proxyRouter = Router();
 
-// Example: /api/proxy/users/* → USERS_SERVICE_URL/v1/* (we rewrite the prefix)
+/**
+ * /api/proxy/users/* -> USERS_SERVICE_URL/v1/*
+ */
 proxyRouter.use(
     '/users',
     requireAuth,
@@ -17,7 +25,9 @@ proxyRouter.use(
     }),
 );
 
-// Similarly for the catalog
+/**
+ * /api/proxy/catalog/* -> CATALOG_SERVICE_URL/api/*
+ */
 proxyRouter.use(
     '/catalog',
     requireAuth,

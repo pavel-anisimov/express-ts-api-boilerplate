@@ -16,30 +16,54 @@ type MockUserProfile = Omit<UserProfile, "status" | "deleted" | "deleted_at"> & 
     deleted_at: string | null;
 };
 
+/**
+ * Returns a plain object for nested mock data fields.
+ */
 function asRecord(value: unknown): Record<string, unknown> {
     return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
 
+/**
+ * Reads a string value from raw mock data, otherwise returns null.
+ */
 function stringOrNull(value: unknown): string | null {
     return typeof value === "string" ? value : null;
 }
 
+/**
+ * Reads a string value from raw mock data, otherwise returns a fallback.
+ */
 function stringOrDefault(value: unknown, fallback: string): string {
     return typeof value === "string" ? value : fallback;
 }
 
+/**
+ * Reads a boolean value from raw mock data, otherwise returns a fallback.
+ */
 function booleanOrDefault(value: unknown, fallback: boolean): boolean {
     return typeof value === "boolean" ? value : fallback;
 }
 
+/**
+ * Reads a number value from raw mock data, otherwise returns a fallback.
+ */
 function numberOrDefault(value: unknown, fallback: number): number {
     return typeof value === "number" ? value : fallback;
 }
 
+/**
+ * Reads string arrays from raw mock data and filters invalid items.
+ */
 function stringArrayOrDefault(value: unknown): string[] {
     return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }
 
+/**
+ * Converts raw mock rows to the safe list DTO returned by `/api/users`.
+ *
+ * Password hashes and nested security/metadata fields are stripped here so
+ * list responses cannot expose auth-only data.
+ */
 function normalizeListUser(user: Record<string, unknown>): UserSafe {
     const { passwordHash: _passwordHash, security: _security, metadata: _metadata, ...safe } = user;
     const status = stringOrDefault(safe.status, "active");
@@ -57,6 +81,12 @@ function normalizeListUser(user: Record<string, unknown>): UserSafe {
     };
 }
 
+/**
+ * Converts raw profile mock rows to the full profile DTO.
+ *
+ * The mock files intentionally mirror Python API payloads, so this function
+ * fills missing nested structures with stable defaults expected by consumers.
+ */
 function normalizeFullProfile(user: Record<string, unknown>): MockUserProfile {
     const security = asRecord(user.security);
     const profile = asRecord(user.profile);
@@ -137,6 +167,12 @@ function normalizeFullProfile(user: Record<string, unknown>): MockUserProfile {
     };
 }
 
+/**
+ * Copies only fields explicitly present in the patch object.
+ *
+ * This preserves existing mock values when a PATCH body omits a field while
+ * still allowing explicit `null` updates where the schema permits them.
+ */
 function assignDefined(target: Record<string, unknown>, source: Record<string, unknown>, keys: string[]): void {
     for (const key of keys) {
         if (Object.hasOwn(source, key)) {
@@ -145,6 +181,9 @@ function assignDefined(target: Record<string, unknown>, source: Record<string, u
     }
 }
 
+/**
+ * Applies soft-delete semantics used by user management endpoints.
+ */
 function applyDeletedState(user: Record<string, unknown>, deleted: boolean): void {
     user.deleted = deleted;
 
@@ -159,6 +198,9 @@ function applyDeletedState(user: Record<string, unknown>, deleted: boolean): voi
     }
 }
 
+/**
+ * Applies suspend/unsuspend semantics without reviving deleted users.
+ */
 function applySuspendedState(user: Record<string, unknown>, suspended: boolean): void {
     if (user.deleted === true || user.status === "deleted") {
         return;
@@ -171,6 +213,13 @@ function applySuspendedState(user: Record<string, unknown>, suspended: boolean):
     }
 }
 
+/**
+ * Applies only fields accepted by the profile update schema.
+ *
+ * The patch is intentionally selective: unknown top-level and nested fields are
+ * ignored here, and existing nested objects are created on demand so partial
+ * mock rows can still accept valid updates.
+ */
 function applyEditableProfilePatch(profile: Record<string, unknown>, patch: EditableUserProfilePatch): void {
     assignDefined(profile, patch as Record<string, unknown>, ["display_name", "first_name", "last_name"]);
 
@@ -215,6 +264,14 @@ function applyEditableProfilePatch(profile: Record<string, unknown>, patch: Edit
     }
 }
 
+/**
+ * Mock users repository backed by files under `mock-data/users`.
+ *
+ * It owns user list/profile/admin-detail reads and keeps related auth mock
+ * state synchronized through the injected auth repository. The files are split
+ * by downstream API response shape, so this repository normalizes them into the
+ * stable DTOs used by gateway services.
+ */
 export class UsersMockRepository implements UsersRepository {
     private readonly listRows = loadMockRecords("users/user-list-items.json");
     private readonly profileRows = loadMockRecords("users/user-profiles.json");
@@ -222,29 +279,47 @@ export class UsersMockRepository implements UsersRepository {
 
     constructor(private readonly authRepository: AuthRepository) {}
 
+    /**
+     * Returns safe list users without passwordHash or security internals.
+     */
     listUsers(): UserSafe[] {
         return this.listRows.map(normalizeListUser);
     }
 
+    /**
+     * Returns a safe user by id from list rows, falling back to profile rows.
+     */
     getUserById(id: string): UserSafe | null {
         const row = this.findListRowById(id) ?? this.findProfileRowById(id);
         return row ? normalizeListUser(row) : null;
     }
 
+    /**
+     * Returns the full frontend profile by user id.
+     */
     getUserProfileById(id: string): UserProfileDto | null {
         const row = this.findProfileRowById(id);
         return row ? normalizeFullProfile(row) : null;
     }
 
+    /**
+     * Returns the full frontend profile by email.
+     */
     getUserProfileByEmail(email: string): UserProfileDto | null {
         const row = this.findProfileRowByEmail(email);
         return row ? normalizeFullProfile(row) : null;
     }
 
+    /**
+     * Returns admin-only metadata by user id.
+     */
     getAdminDetailsById(id: string): Record<string, unknown> | null {
         return this.adminRows.find((user) => user.id === id) ?? null;
     }
 
+    /**
+     * Updates editable fields on the requester's own profile.
+     */
     updateOwnProfile(requester: UsersRepositoryRequester, patch: EditableUserProfilePatch): UserProfileDto | null {
         const row =
             (requester.id || requester.sub ? this.findProfileRowById(requester.id ?? requester.sub ?? "") : null) ??
@@ -258,6 +333,9 @@ export class UsersMockRepository implements UsersRepository {
         return normalizeFullProfile(row);
     }
 
+    /**
+     * Soft-deletes/restores a user and mirrors the state into related rows.
+     */
     updateUserDeleted(id: string, deleted: boolean): UserProfileDto | null {
         const profile = this.findProfileRowById(id);
         if (!profile) {
@@ -269,6 +347,9 @@ export class UsersMockRepository implements UsersRepository {
         return normalizeFullProfile(profile);
     }
 
+    /**
+     * Suspends/unsuspends a user and mirrors the state into related rows.
+     */
     updateUserSuspended(id: string, suspended: boolean): UserProfileDto | null {
         const profile = this.findProfileRowById(id);
         if (!profile) {
@@ -296,6 +377,14 @@ export class UsersMockRepository implements UsersRepository {
         return this.listRows.find((user) => typeof user.email === "string" && user.email.toLowerCase() === email.toLowerCase()) ?? null;
     }
 
+    /**
+     * Keeps list rows and auth rows aligned with profile status mutations.
+     *
+     * Mock data is split by expected downstream endpoint, but gateway behavior
+     * should look like the downstream services returned a consistent state.
+     * Duplicate list-row references are removed before mutation so id/email
+     * matches do not apply the same state change twice.
+     */
     private syncRelatedRows(profile: Record<string, unknown>, mutate: (row: Record<string, unknown>) => void): void {
         const id = typeof profile.id === "string" ? profile.id : "";
         const email = typeof profile.email === "string" ? profile.email : "";

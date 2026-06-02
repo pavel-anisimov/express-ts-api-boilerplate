@@ -2,6 +2,12 @@ import request from 'supertest';
 
 import { app } from '../src/app';
 
+/**
+ * Auth route integration tests.
+ *
+ * These exercise the gateway in mock mode through the real Express app and
+ * verify public response contracts rather than repository internals.
+ */
 describe('Auth', () => {
     it('logs in with mock auth credentials', async () => {
         const response = await request(app)

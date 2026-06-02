@@ -7,11 +7,24 @@ type RequestOptions = {
     token?: string;
 };
 
+/**
+ * Auth user shape synthesized from remote users data.
+ *
+ * The gateway login flow still expects passwordHash/emailVerified fields from
+ * the auth repository contract. Remote user list responses must not expose a
+ * real password hash, so this client fills it with an empty string.
+ */
 export type RemoteAuthUser = UserSafe & {
     passwordHash: "";
     emailVerified: boolean;
 };
 
+/**
+ * Login response accepted from the downstream auth API.
+ *
+ * Both camelCase and snake_case token fields are supported while the Python
+ * API contract is still settling.
+ */
 export type RemoteLoginResponse = {
     accessToken?: string;
     access_token?: string;
@@ -22,6 +35,12 @@ export type RemoteLoginResponse = {
     user?: UserSafe;
 };
 
+/**
+ * Error wrapper for non-2xx Python API responses.
+ *
+ * Keeping the original response body lets services preserve meaningful
+ * downstream error messages without using `any`.
+ */
 export class PythonAuthApiError extends Error {
     constructor(
         public readonly status: number,
@@ -44,6 +63,13 @@ function bearer(token: string | undefined): Record<string, string> {
     return token ? { authorization: `Bearer ${token}` } : {};
 }
 
+/**
+ * Fetch JSON from a configured downstream service.
+ *
+ * This is intentionally small and local to the current Python auth/users API
+ * integration. It should move behind repository implementations once HTTP
+ * repositories are introduced.
+ */
 async function requestJson<T>(baseUrl: string, path: string, options: RequestOptions = {}): Promise<T> {
     const init: RequestInit = {
         method: options.method ?? "GET",
@@ -70,6 +96,12 @@ async function requestJson<T>(baseUrl: string, path: string, options: RequestOpt
     return body as T;
 }
 
+/**
+ * Normalize common collection response envelopes into a plain items array.
+ *
+ * Supports direct arrays, `{ items }`, `{ data: { items } }`, and `{ data }`
+ * because backend response envelopes are not finalized yet.
+ */
 function asItems<T>(value: unknown): T[] {
     if (Array.isArray(value)) {
         return value as T[];
@@ -90,6 +122,10 @@ function asItems<T>(value: unknown): T[] {
     return [];
 }
 
+/**
+ * Adapt a safe remote user row to the auth lookup shape expected by the
+ * gateway's current login compatibility facade.
+ */
 function normalizeRemoteAuthUser(user: UserSafe): RemoteAuthUser {
     return {
         ...user,
@@ -98,6 +134,9 @@ function normalizeRemoteAuthUser(user: UserSafe): RemoteAuthUser {
     };
 }
 
+/**
+ * Proxy login to the downstream auth API.
+ */
 export async function remoteLogin(email: string, password: string): Promise<RemoteLoginResponse> {
     return requestJson<RemoteLoginResponse>(services.auth, "/auth/login", {
         method: "POST",
@@ -105,6 +144,9 @@ export async function remoteLogin(email: string, password: string): Promise<Remo
     });
 }
 
+/**
+ * Proxy refresh-token exchange to the downstream auth API.
+ */
 export async function remoteRefresh(refreshToken: string): Promise<unknown> {
     return requestJson<unknown>(services.auth, "/auth/refresh", {
         method: "POST",
@@ -112,20 +154,32 @@ export async function remoteRefresh(refreshToken: string): Promise<unknown> {
     });
 }
 
+/**
+ * Fetch the current user from the downstream auth API.
+ */
 export async function remoteGetMe(token: string): Promise<UserSafe> {
     return requestJson<UserSafe>(services.auth, "/auth/me", { token });
 }
 
+/**
+ * Fetch all users from the downstream users API and normalize response envelope.
+ */
 export async function remoteGetAllUsers(): Promise<UserSafe[]> {
     return asItems<UserSafe>(await requestJson<unknown>(services.users, "/users"));
 }
 
+/**
+ * Compatibility lookup used by the current gateway login facade.
+ */
 export async function remoteFindByEmail(email: string): Promise<RemoteAuthUser | null> {
     const users = await remoteGetAllUsers();
     const user = users.find((item) => item.email.toLowerCase() === email.toLowerCase());
     return user ? normalizeRemoteAuthUser(user) : null;
 }
 
+/**
+ * Fetch a safe user by id, mapping downstream 404 to null.
+ */
 export async function remoteGetById(id: string): Promise<UserSafe | null> {
     try {
         return await requestJson<UserSafe>(services.users, `/users/${encodeURIComponent(id)}`);
@@ -138,6 +192,9 @@ export async function remoteGetById(id: string): Promise<UserSafe | null> {
     }
 }
 
+/**
+ * Fetch a full user profile by id, mapping downstream 404 to null.
+ */
 export async function remoteGetProfileById(id: string): Promise<UserProfileDto | null> {
     try {
         return await requestJson<UserProfileDto>(services.users, `/users/${encodeURIComponent(id)}/profile`);
@@ -150,12 +207,18 @@ export async function remoteGetProfileById(id: string): Promise<UserProfileDto |
     }
 }
 
+/**
+ * Resolve a profile by email through the users list, then fetch by id.
+ */
 export async function remoteGetProfileByEmail(email: string): Promise<UserProfileDto | null> {
     const users = await remoteGetAllUsers();
     const user = users.find((item) => item.email.toLowerCase() === email.toLowerCase());
     return user ? remoteGetProfileById(user.id) : null;
 }
 
+/**
+ * Update the authenticated requester's own profile in the downstream users API.
+ */
 export async function remoteUpdateOwnProfile(
     requester: { id?: string; sub?: string },
     patch: EditableUserProfilePatch,
@@ -171,6 +234,9 @@ export async function remoteUpdateOwnProfile(
     });
 }
 
+/**
+ * Soft-delete or restore a user through the downstream users API.
+ */
 export async function remoteUpdateUserDeleted(id: string, deleted: boolean): Promise<UserProfileDto | null> {
     return requestJson<UserProfileDto>(services.users, `/users/${encodeURIComponent(id)}/deleted`, {
         method: "PATCH",
@@ -178,6 +244,9 @@ export async function remoteUpdateUserDeleted(id: string, deleted: boolean): Pro
     });
 }
 
+/**
+ * Suspend or unsuspend a user through the downstream users API.
+ */
 export async function remoteUpdateUserSuspended(id: string, suspended: boolean): Promise<UserProfileDto | null> {
     return requestJson<UserProfileDto>(services.users, `/users/${encodeURIComponent(id)}/suspended`, {
         method: "PATCH",

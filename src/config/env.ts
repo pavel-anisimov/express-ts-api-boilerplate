@@ -1,12 +1,37 @@
 import 'dotenv/config';
 
-// "1h" and numbers will be supported by the type right away
+/**
+ * Runtime environment configuration for the gateway.
+ *
+ * This module is the only place where raw `process.env` values should be
+ * parsed into typed application settings. Keeping normalization here prevents
+ * controllers, services, and repositories from depending on stringly env vars.
+ */
+
+/**
+ * Duration values accepted by the JWT library and the local mock runtime.
+ *
+ * Examples: `500ms`, `30s`, `10m`, `1h`, `7d`.
+ */
 type MsLike = `${number}${'ms'|'s'|'m'|'h'|'d'}`;
 
+/**
+ * Parses a comma-separated environment variable into a list.
+ *
+ * Empty segments are removed so `CORS_ORIGINS=http://a,,http://b` behaves the
+ * same as `CORS_ORIGINS=http://a,http://b`.
+ */
 function arr(v?: string) {
     return (v ?? '').split(',').map(s => s.trim()).filter(Boolean);
 }
 
+/**
+ * Parses boolean-like environment values.
+ *
+ * Only explicit truthy values enable the flag. Missing, empty, or unknown
+ * values fall back to the provided default, which keeps feature flags
+ * predictable in local and test environments.
+ */
 function bool(v: string | undefined, fallback: boolean): boolean {
     const normalized = v?.trim().toLowerCase();
     if (!normalized) {
@@ -17,13 +42,11 @@ function bool(v: string | undefined, fallback: boolean): boolean {
 }
 
 /**
- * Configuration object for environment variables.
+ * Normalized gateway environment.
  *
- * @property {string} NODE_ENV - Represents the current running environment of the application (e.g., 'development', 'production'). Defaults to 'development' if not set.
- * @property {number} PORT - Port number on which the application will run. Defaults to 3100 if not specified in the environment variables.
- * @property {Array<string>} CORS_ORIGINS - List of allowed origins for Cross-Origin Resource Sharing (CORS). Extracted and parsed from the environment variable `CORS_ORIGINS`.
- * @property {string} JWT_SECRET - Secret key used for signing and verifying JSON Web Tokens (JWT). Defaults to 'change_me' if not explicitly specified.
- * @property {MsLike|number} JWT_EXPIRES_IN - Expiration duration for JWT. Can be a string or number. Defaults to '1h' if not set.
+ * Values are resolved once at module load and then imported as read-only
+ * application configuration. Test mode defaults to mock data so CI and local
+ * test runs do not require downstream Python services.
  */
 export const env = {
     NODE_ENV: process.env.NODE_ENV ?? 'development',

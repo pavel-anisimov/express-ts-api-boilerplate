@@ -28,10 +28,16 @@ type RawAuthUser = {
     email_verified?: unknown;
 };
 
+/**
+ * Narrows raw role values from mock data to gateway roles.
+ */
 function isRole(role: unknown): role is Role {
     return role === "user" || role === "admin" || role === "manager";
 }
 
+/**
+ * Narrows raw status values accepted by auth mock records.
+ */
 function isUserStatus(status: unknown): status is MockUserStatus {
     return (
         status === "active" ||
@@ -43,6 +49,14 @@ function isUserStatus(status: unknown): status is MockUserStatus {
     );
 }
 
+/**
+ * Normalizes raw mock auth rows into the internal auth user contract.
+ *
+ * Mock data intentionally keeps some Python-style field names, so this adapter
+ * accepts both camelCase and snake_case fields without leaking that detail to
+ * services. Missing ids fall back to email or a generated value so invalid mock
+ * rows do not crash the gateway during local development.
+ */
 function toAuthUser(user: Record<string, unknown>): AuthRepositoryUser {
     const rawUser = user as RawAuthUser;
     const id =
@@ -81,6 +95,12 @@ function toAuthUser(user: Record<string, unknown>): AuthRepositoryUser {
     };
 }
 
+/**
+ * Converts a raw mock session row to the repository session contract.
+ *
+ * Rows without `access_token` are ignored because they cannot be addressed by
+ * the auth middleware/session lookup flow.
+ */
 function toSession(value: Record<string, unknown>): AuthRepositorySession | null {
     if (typeof value.access_token !== "string") {
         return null;
@@ -105,11 +125,26 @@ function toSession(value: Record<string, unknown>): AuthRepositorySession | null
     return session;
 }
 
+/**
+ * Mock auth repository backed by files under `mock-data/auth`.
+ *
+ * It models the current Python auth API behavior closely enough for gateway
+ * controllers and services to run without downstream services. The repository
+ * keeps rows in memory for the lifetime of the process, which lets tests and
+ * local smoke checks observe status updates made through users repository
+ * methods.
+ */
 export class AuthMockRepository implements AuthRepository {
     private readonly authRows = loadMockRecords("auth/auth-users.json");
     private readonly meRows = loadMockRecords("auth/auth-me.json");
     private readonly sessionRows = loadMockItems<Record<string, unknown>>("auth/auth-sessions.json");
 
+    /**
+     * Resolves the current user payload from access token, id/sub, or email.
+     *
+     * Token lookup wins because it most closely mirrors `/auth/me` behavior in
+     * remote mode. Id/sub and email fallback support locally generated JWTs.
+     */
     getMe(identity: AuthRepositoryIdentity): Record<string, unknown> | null {
         if (identity.accessToken) {
             return this.getSession(identity.accessToken)?.user ?? null;
@@ -127,21 +162,37 @@ export class AuthMockRepository implements AuthRepository {
         return null;
     }
 
+    /**
+     * Looks up a mock session by access token.
+     */
     getSession(accessToken: string): AuthRepositorySession | null {
         const row = this.sessionRows.find((session) => session.access_token === accessToken);
         return row ? toSession(row) : null;
     }
 
+    /**
+     * Finds a credential-bearing auth user by email for login.
+     */
     findAuthUserByEmail(email: string): AuthRepositoryUser | null {
         const row = this.authRows.find((user) => typeof user.email === "string" && user.email.toLowerCase() === email.toLowerCase());
         return row ? toAuthUser(row) : null;
     }
 
+    /**
+     * Finds a credential-bearing auth user by id.
+     */
     findAuthUserById(id: string): AuthRepositoryUser | null {
         const row = this.authRows.find((user) => user.id === id);
         return row ? toAuthUser(row) : null;
     }
 
+    /**
+     * Applies user status changes to the matching auth row.
+     *
+     * Users mock state and auth mock state are stored in separate files, but
+     * gateway behavior expects status/deleted flags to stay aligned after
+     * profile management endpoints mutate user state.
+     */
     updateAuthUserState(identity: Pick<AuthRepositoryIdentity, "id" | "email">, patch: AuthUserStatePatch): void {
         const row =
             (identity.id ? this.authRows.find((user) => user.id === identity.id) : null) ??

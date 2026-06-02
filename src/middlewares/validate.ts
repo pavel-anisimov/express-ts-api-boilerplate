@@ -1,7 +1,13 @@
-// type-only imports from express
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import type { ZodType } from "zod";
 
+/**
+ * Creates an Express middleware for validating one request segment with Zod.
+ *
+ * Successful parses replace or merge the validated data back onto the request
+ * so downstream handlers can consume normalized values. Query and params are
+ * merged because Express exposes them through request-owned objects/getters.
+ */
 export function validate<T>(
     schema: ZodType<T>,
     where: "body" | "query" | "params" = "body"
@@ -17,7 +23,7 @@ export function validate<T>(
         }
 
         // NEVER do: req[where] = parsed.data
-        // In Express 5, req.query is just a getter.
+        // In Express 5, req.query is a getter, so only merge into it.
         if (where === "query") {
             Object.assign(
                 req.query as unknown as Record<string, unknown>,
@@ -34,4 +40,3 @@ export function validate<T>(
         next();
     };
 }
-

@@ -1,9 +1,15 @@
-// src/controllers/users.ts
 import type { Request, Response, NextFunction } from "express";
 
 import { userService } from "../services/userService";
 import { HttpError } from "../utils/httpError";
 
+/**
+ * Authenticated request variants accepted by user controllers.
+ *
+ * `request.user` is the normalized gateway identity. `request.auth` preserves
+ * JWT claims from token middleware. Supporting both keeps controllers stable
+ * while auth middleware and mock/remote auth sources evolve.
+ */
 type RequestWithAuth = Request & {
     auth?: {
         sub: string;
@@ -17,11 +23,20 @@ type RequestWithAuth = Request & {
     };
 };
 
+/**
+ * Returns the requester identity attached by authentication middleware.
+ */
 function getRequester(request: Request): RequestWithAuth["user"] | RequestWithAuth["auth"] | null {
     const authReq = request as RequestWithAuth;
     return authReq.user ?? authReq.auth ?? null;
 }
 
+/**
+ * Converts expected service failures into HTTP responses.
+ *
+ * Unknown errors are passed to Express error middleware so logging and 500
+ * handling stay centralized.
+ */
 function handleServiceError(error: unknown, response: Response, next: NextFunction) {
     if (error instanceof HttpError) {
         return response.status(error.status).json({ error: error.message });
@@ -33,7 +48,8 @@ function handleServiceError(error: unknown, response: Response, next: NextFuncti
 /**
  * GET /api/users?query=&page=&limit=
  * (also supports short ?q= for backwards compatibility)
- * Returns the patinated envelope: { items, total, page, limit }
+ *
+ * Returns the paginated envelope: `{ items, total, page, limit }`.
  */
 export async function listUsers(
     request: Request<unknown, unknown, unknown, { query?: string; q?: string; page?: string | number; limit?: string | number }>,
@@ -49,7 +65,9 @@ export async function listUsers(
 
 /**
  * GET /api/users/:id
- * Blank - we leave it for future implementation.
+ *
+ * Placeholder endpoint reserved for a future public user details response.
+ * Profile-specific data is currently served by `GET /api/users/:id/profile`.
  */
 export async function getUserById(_request: Request, response: Response, next: NextFunction) {
     try {
@@ -65,6 +83,7 @@ export async function getUserById(_request: Request, response: Response, next: N
 
 /**
  * GET /api/users/:id/profile
+ *
  * Returns a full profile to admins, or to the authenticated owner.
  */
 export async function getUserProfile(
@@ -86,6 +105,7 @@ export async function getUserProfile(
 
 /**
  * PATCH /api/users/:id/deleted
+ *
  * Soft-delete/restore a user. Allowed for admins or the target user.
  */
 export async function setUserDeleted(
@@ -107,6 +127,7 @@ export async function setUserDeleted(
 
 /**
  * PATCH /api/users/:id/suspended
+ *
  * Suspend/unsuspend a user. Allowed for admins and managers.
  */
 export async function setUserSuspended(
@@ -128,7 +149,8 @@ export async function setUserSuspended(
 
 /**
  * POST /api/users
- * Blank - we leave it for future implementation.
+ *
+ * Placeholder endpoint for future user creation flow.
  */
 export async function createUser(_request: Request, response: Response, next: NextFunction) {
     try {
@@ -141,7 +163,8 @@ export async function createUser(_request: Request, response: Response, next: Ne
 
 /**
  * PUT /api/users/:id
- * Blank - we leave it for future implementation.
+ *
+ * Placeholder endpoint for future full user update flow.
  */
 export async function updateUser(_request: Request, response: Response, next: NextFunction) {
     try {
@@ -154,7 +177,9 @@ export async function updateUser(_request: Request, response: Response, next: Ne
 
 /**
  * DELETE /api/users/:id
- * Blank - we leave it for future implementation.
+ *
+ * Deletes a user through the service layer. The current implementation keeps
+ * the public response shape aligned with the existing soft-delete behavior.
  */
 export async function deleteUser(
     request: Request<{ id: string }>,

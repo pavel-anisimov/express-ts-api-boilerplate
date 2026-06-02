@@ -3,11 +3,20 @@ import request from 'supertest';
 
 import { app } from '../src/app';
 
+/**
+ * Logs in through the public auth endpoint and returns an access token.
+ */
 async function login(email: string, password: string) {
     const r = await request(app).post('/api/auth/login').send({ email, password }).expect(200);
     return r.body.accessToken as string;
 }
 
+/**
+ * Users route integration tests.
+ *
+ * Covers authentication, search/pagination response contracts, and the current
+ * ownership/admin authorization behavior implemented in UserService.
+ */
 describe('Users', () => {
     it('requires authentication for listing users', async () => {
         await request(app).get('/api/users').expect(401);

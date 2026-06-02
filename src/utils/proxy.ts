@@ -4,26 +4,18 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { logger } from './logger';
 
 /**
- * Type definition for ProxyOpts.
- *
- * Represents options for configuring a proxy.
- *
- * @property {function} [pathRewrite] - Optional function used to rewrite the request path.
- *     The function takes the original path and the request object as arguments and
- *     should return the rewritten path as a string.
+ * Gateway proxy options supported by route-level proxy mounts.
  */
 type ProxyOpts = {
     pathRewrite?: (path: string, req: Request) => string;
 };
 
 /**
- * Sets up a proxy middleware handler that forwards requests to a specified target.
- * The proxy middleware supports custom logging, authorization header forwarding,
- * and optional path rewriting.
+ * Creates a configured downstream proxy middleware.
  *
- * @param {string} target - The target URL to which the requests will be proxied.
- * @param {ProxyOpts} [opts={}] - Optional configuration for the proxy middleware, including path rewrite options.
- * @return {RequestHandler} A middleware function configured for request proxying.
+ * The gateway keeps auth and tracing headers when forwarding requests, maps
+ * proxy logs into the shared logger, and lets route files own path rewriting
+ * because each downstream service has its own public prefix.
  */
 export function proxyTo(target: string, opts: ProxyOpts = {}): RequestHandler {
     return createProxyMiddleware({
@@ -40,7 +32,7 @@ export function proxyTo(target: string, opts: ProxyOpts = {}): RequestHandler {
 
         pathRewrite: opts.pathRewrite ?? ((path) => path),
 
-        // ✅ v3: events via the `on` field
+        // http-proxy-middleware v3 registers hooks through the `on` field.
         on: {
             proxyReq(proxyReq, req) {
                 const auth = (req as Request).header('authorization');
@@ -53,9 +45,6 @@ export function proxyTo(target: string, opts: ProxyOpts = {}): RequestHandler {
                     proxyReq.setHeader('x-request-id', reqId);
                 }
             },
-            // optionally you can add:
-            // error(err, req, res) { ... },
-            // proxyRes(proxyRes, req, res) { ... },
         },
     });
 }

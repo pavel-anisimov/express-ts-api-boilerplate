@@ -1,4 +1,3 @@
-// src/routes/users.ts
 import { Router } from "express";
 import { z } from "zod";
 
@@ -14,27 +13,44 @@ import {
 } from "../controllers/users";
 import { requireAuth } from "../middlewares/auth";
 import { validate } from "../middlewares/validate";
-// If you use RBAC, you can enable read/manage user rights
+// RBAC can be enabled per route once product permissions are finalized.
 // import { requirePermission } from "../middlewares/permissions";
 
+/**
+ * Users route group.
+ *
+ * Every route currently requires authentication. Authorization decisions that
+ * depend on ownership/admin roles are handled by UserService; route-level RBAC
+ * hooks are left commented until product permissions are finalized.
+ */
 export const usersRouter = Router();
 
+/**
+ * Request body for soft-delete/restore endpoint.
+ */
 const DeletedPatchSchema = z.object({
     deleted: z.boolean(),
 }).strict();
 
+/**
+ * Request body for suspend/unsuspend endpoint.
+ */
 const SuspendedPatchSchema = z.object({
     suspended: z.boolean(),
 }).strict();
 
-// Full user profile for frontend profile pages
+/**
+ * GET /api/users/:id/profile
+ */
 usersRouter.get(
     "/:id/profile",
     requireAuth,
     getUserProfile
 );
 
-// Soft-delete/restore a user
+/**
+ * PATCH /api/users/:id/deleted
+ */
 usersRouter.patch(
     "/:id/deleted",
     requireAuth,
@@ -42,7 +58,9 @@ usersRouter.patch(
     setUserDeleted
 );
 
-// Suspend/unsuspend a user
+/**
+ * PATCH /api/users/:id/suspended
+ */
 usersRouter.patch(
     "/:id/suspended",
     requireAuth,
@@ -50,7 +68,9 @@ usersRouter.patch(
     setUserSuspended
 );
 
-// List of users
+/**
+ * GET /api/users
+ */
 usersRouter.get(
     "/",
     requireAuth,
@@ -58,7 +78,9 @@ usersRouter.get(
     listUsers
 );
 
-// Get user by id
+/**
+ * GET /api/users/:id
+ */
 usersRouter.get(
     "/:id",
     requireAuth,
@@ -66,7 +88,9 @@ usersRouter.get(
     getUserById
 );
 
-// Create user
+/**
+ * POST /api/users
+ */
 usersRouter.post(
     "/",
     requireAuth,
@@ -74,7 +98,9 @@ usersRouter.post(
     createUser
 );
 
-// Update user
+/**
+ * PUT /api/users/:id
+ */
 usersRouter.put(
     "/:id",
     requireAuth,
@@ -82,7 +108,9 @@ usersRouter.put(
     updateUser
 );
 
-// Delete user
+/**
+ * DELETE /api/users/:id
+ */
 usersRouter.delete(
     "/:id",
     requireAuth,
