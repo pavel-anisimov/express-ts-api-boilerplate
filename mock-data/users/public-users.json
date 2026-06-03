@@ -130,7 +130,7 @@
     "avatar_url": "https://example.com/avatars/blocked.png",
     "bio": "Blocked account used for testing restricted access and account status handling.",
     "roles": ["user"],
-    "status": "blocked",
+    "status": "suspended",
     "profile": {
       "location": {
         "country": "USA"

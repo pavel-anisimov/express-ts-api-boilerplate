@@ -130,7 +130,7 @@
     "name": "Blocked",
     "passwordHash": "$2b$10$WqlTrFXBjlBlCFMFo8kvEesqjHdN4zI8QF8lqgtCzfY5/MtExL5/K",
     "roles": ["user"],
-    "status": "blocked",
+    "status": "suspended",
     "email_verified": true,
     "email_verified_at": "2025-08-05T09:10:00Z",
     "tenant_id": "t2",

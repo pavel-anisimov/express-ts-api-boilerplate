@@ -135,7 +135,7 @@
       "display_name": "Blocked User",
       "avatar_url": "https://example.com/avatars/blocked.png",
       "roles": ["user"],
-      "status": "blocked",
+      "status": "suspended",
       "email_verified": true,
       "tenant_id": "t2"
     }
